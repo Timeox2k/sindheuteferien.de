@@ -1,39 +1,15 @@
 <?php
 
+use App\Http\Controllers\DatenschutzController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ImpressumController;
+use App\Http\Controllers\StateController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', HomeController::class)->name("home");
+Route::get('/impressum', ImpressumController::class)->name('impressum');
+Route::get('/datenschutz', DatenschutzController::class)->name('datenschutz');
+Route::redirect('/github', 'https://github.com/Timeox2k/sindheuteferien.de')->name('github');
 
-Route::get('/impressum', function () {
-    return view('impressum');
-})->name('impressum');
-
-
-Route::get('/{route}', function ($route) {
-    $routeToKuerzel = [
-        'baden-wuerttemberg' => 'bw',
-        'bayern' => 'by',
-        'berlin' => 'be',
-        'brandenburg' => 'bb',
-        'bremen' => 'hb',
-        'hamburg' => 'hh',
-        'hessen' => 'he',
-        'mecklenburg-vorpommern' => 'mv',
-        'niedersachsen' => 'ni',
-        'nordrhein-westfalen' => 'nw',
-        'rheinland-pfalz' => 'rp',
-        'saarland' => 'sl',
-        'sachsen' => 'sn',
-        'sachsen-anhalt' => 'st',
-        'schleswig-holstein' => 'sh',
-        'thueringen' => 'th'
-    ];
-
-    if (isset($routeToKuerzel[$route])) {
-        return view('sind-heute-ferien-in', ['bundesland' => $routeToKuerzel[$route]]);
-    }
-
-    abort(404);
-})->where('route', '[a-z\-]+')->name('bundesland');
+// Achtung, diese Route muss als letzte definiert werden, da sie alle anderen Routen abfängt
+Route::get('/{route}', StateController::class)->where('route', '[a-z\-]+')->name('bundesland');

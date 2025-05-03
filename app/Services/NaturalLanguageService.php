@@ -59,4 +59,25 @@ class NaturalLanguageService
         }
         return $prefixedName;
     }
+
+    public function multiChoice($number, array $choices) {
+        $count = count($choices);
+        if ($count === 0) {
+            return null;
+        }
+
+        if ($count === 1) {
+            return sprintf($choices[0], $number);
+        }
+
+        if($number === 0) {
+            return sprintf($choices[0], $number);
+        }
+
+        if ($number === 1) {
+            return sprintf($choices[1], $number);
+        }
+
+        return sprintf($choices[2], $number);
+    }
 }

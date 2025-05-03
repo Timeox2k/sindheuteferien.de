@@ -1,20 +1,30 @@
 <?php
+/**
+ * File: HolidayService.php
+ * Created: May 2025
+ * Project: sindheuteferien.de
+ */
 
-namespace App\Http\Controllers;
+namespace App\Services;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
-class SchoolHolidayController extends Controller
+class HolidayService
 {
-    public static function getNow(): Carbon
+    public function getNow(): Carbon
     {
         $request = app(Request::class);
 
         // You can use ?now=2025-05-01 to test other dates, for example
         if ($request->has("now")) {
-            return $request->date('now');
+            try {
+                return $request->date('now');
+            }
+            catch (\Exception $e) {
+                // Pff, then we just use the current date
+            }
         }
 
         return now();
@@ -24,36 +34,18 @@ class SchoolHolidayController extends Controller
      * @param string $bundeslandSlug
      * @return string The ISO 3166-2 code for the Bundesland, fallback to $bundeslandSlug
      */
-    private static function getBundeslandCode(string $bundeslandSlug): string
+    private function getBundeslandCode(string $bundeslandSlug): string
     {
-        $bundeslandMap = [
-            'bw' => 'DE-BW',
-            'by' => 'DE-BY',
-            'be' => 'DE-BE',
-            'bb' => 'DE-BB',
-            'hb' => 'DE-HB',
-            'hh' => 'DE-HH',
-            'he' => 'DE-HE',
-            'mv' => 'DE-MV',
-            'ni' => 'DE-NI',
-            'nw' => 'DE-NW',
-            'rp' => 'DE-RP',
-            'sl' => 'DE-SL',
-            'sn' => 'DE-SN',
-            'st' => 'DE-ST',
-            'sh' => 'DE-SH',
-            'th' => 'DE-TH'
-        ];
-
+        $bundeslandMap = $this->getBundslandSlugMap();
         return Arr::get($bundeslandMap, $bundeslandSlug, $bundeslandSlug);
     }
 
-    public static function areTodayHolidays($bundesland)
+    public function areTodayHolidays($bundesland)
     {
-        $today = self::getNow()->format('Y-m-d');
+        $today = $this->getNow()->format('Y-m-d');
 
         // Konvertierung der Kürzel
-        $bundeslandCode = self::getBundeslandCode($bundesland);
+        $bundeslandCode = $this->getBundeslandCode($bundesland);
         // Alle aktuellen Ferien abrufen und in PHP filtern
         $currentHolidays = \App\Models\SchoolHoliday::whereDate('start_date', '<=', $today)
             ->whereDate('end_date', '>=', $today)
@@ -65,7 +57,7 @@ class SchoolHolidayController extends Controller
                 return true;
             }
 
-            if (self::matchesBundesland($holiday->subdivisions, $bundeslandCode)) {
+            if ($this->matchesBundesland($holiday->subdivisions, $bundeslandCode)) {
                 return true;
             }
         }
@@ -73,16 +65,16 @@ class SchoolHolidayController extends Controller
         return false;
     }
 
-    public static function getDaysToNextHolidays($bundesland, $minDurationDays = 2)
+    public function getDaysToNextHolidays($bundesland, $minDurationDays = 2)
     {
-        $today = self::getNow()->startOfDay();
+        $today = $this->getNow()->startOfDay();
         $todayFormatted = $today->format('Y-m-d');
 
         // Konvertierung der Kürzel
-        $bundeslandCode = self::getBundeslandCode($bundesland);
+        $bundeslandCode = $this->getBundeslandCode($bundesland);
 
         // Prüfen, ob heute bereits Ferien sind
-        if (self::areTodayHolidays($bundesland)) {
+        if ($this->areTodayHolidays($bundesland)) {
             return 0;
         }
 
@@ -104,7 +96,7 @@ class SchoolHolidayController extends Controller
                 break;
             }
 
-            if (self::matchesBundesland($holiday->subdivisions, $bundeslandCode)) {
+            if ($this->matchesBundesland($holiday->subdivisions, $bundeslandCode)) {
                 $nextHoliday = $holiday;
                 break;
             }
@@ -129,15 +121,15 @@ class SchoolHolidayController extends Controller
         ];
     }
 
-    public static function holidaysEndInDays($bundesland)
+    public function holidaysEndInDays($bundesland)
     {
         // Get the current date
-        $today = self::getNow()->startOfDay();
+        $today = $this->getNow()->startOfDay();
         $todayFormatted = $today->format('Y-m-d');
-        $bundeslandCode = self::getBundeslandCode($bundesland);
+        $bundeslandCode = $this->getBundeslandCode($bundesland);
 
         // Prüfen, ob heute überhaupt Ferien sind
-        if (!self::areTodayHolidays($bundesland)) {
+        if (!$this->areTodayHolidays($bundesland)) {
             return null;
         }
 
@@ -159,7 +151,7 @@ class SchoolHolidayController extends Controller
                 break;
             }
 
-            if (self::matchesBundesland($holiday->subdivisions, $bundeslandCode)) {
+            if ($this->matchesBundesland($holiday->subdivisions, $bundeslandCode)) {
                 $currentHoliday = $holiday;
                 break;
             }
@@ -181,7 +173,7 @@ class SchoolHolidayController extends Controller
         ];
     }
 
-    private static function matchesBundesland($subdivisions, $bundeslandCode)
+    private function matchesBundesland($subdivisions, $bundeslandCode)
     {
         // Überprüfe, ob $subdivisions ein String ist und dekodiere ihn in diesem Fall
         if (is_string($subdivisions)) {
@@ -198,5 +190,13 @@ class SchoolHolidayController extends Controller
         }
 
         return false;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    private function getBundslandSlugMap(): array
+    {
+        return collect(config('holiday.states'))->pluck('iso', 'kuerzel')->toArray();
     }
 }

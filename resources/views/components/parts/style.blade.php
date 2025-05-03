@@ -10,13 +10,40 @@
     header {
         background-color: #1e40af;
         color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    header .top-bar {
+        width: 100%;
+        max-width: 900px;
+    }
+
+    header .top-bar a {
+        color: #fff;
+        display: inline-block;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    header .top-bar a:hover {
+        text-decoration: underline;
+    }
+
+    header .header-container {
         padding: 2rem 1rem;
         text-align: center;
     }
 
     header h1 {
         font-size: 2.5rem;
-        margin-bottom: 0.5rem;
+        margin: 0.5rem;
     }
 
     header p {
@@ -139,7 +166,7 @@
     }
 
     .navbar {
-        background-color: #fff;
+        background-color: #1e40af;
         padding: 1rem;
         text-align: center;
     }
@@ -156,7 +183,7 @@
     }
 
     .navbar a {
-        color: #1e40af;
+        color: #fff;
         text-decoration: none;
         font-weight: bold;
     }
@@ -196,4 +223,35 @@
         margin: 2rem 0;
     }
 
+    footer {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .hidden-md-block {
+        display: none !important;;
+    }
+
+    @media (min-width: 692px) {
+        .hidden-md-block {
+            display: block !important;
+        }
+        .hidden-md-inline-block {
+            display: inline-block !important;;
+        }
+    }
+
+    .block-md-none {
+        display: block !important;;
+    }
+
+    @media (min-width: 692px) {
+        .block-md-none {
+            display: none !important;;
+        }
+    }
 </style>
