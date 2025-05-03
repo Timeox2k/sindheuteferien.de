@@ -1,4 +1,28 @@
-@php use App\Http\Controllers\SchoolHolidayController; @endphp
+@php
+    use App\Http\Controllers\SchoolHolidayController;use App\Services\NaturalLanguageService;
+    $label = app(NaturalLanguageService::class);
+@endphp
+
+@php
+    $bundeslaender = [
+        'bw' => ['name' => 'Baden-Württemberg', 'route' => 'baden-wuerttemberg'],
+        'by' => ['name' => 'Bayern', 'route' => 'bayern'],
+        'be' => ['name' => 'Berlin', 'route' => 'berlin'],
+        'bb' => ['name' => 'Brandenburg', 'route' => 'brandenburg'],
+        'hb' => ['name' => 'Bremen', 'route' => 'bremen'],
+        'hh' => ['name' => 'Hamburg', 'route' => 'hamburg'],
+        'he' => ['name' => 'Hessen', 'route' => 'hessen'],
+        'mv' => ['name' => 'Mecklenburg-Vorpommern', 'route' => 'mecklenburg-vorpommern'],
+        'ni' => ['name' => 'Niedersachsen', 'route' => 'niedersachsen'],
+        'nw' => ['name' => 'Nordrhein-Westfalen', 'route' => 'nordrhein-westfalen'],
+        'rp' => ['name' => 'Rheinland-Pfalz', 'route' => 'rheinland-pfalz'],
+        'sl' => ['name' => 'Saarland', 'route' => 'saarland'],
+        'sn' => ['name' => 'Sachsen', 'route' => 'sachsen'],
+        'st' => ['name' => 'Sachsen-Anhalt', 'route' => 'sachsen-anhalt'],
+        'sh' => ['name' => 'Schleswig-Holstein', 'route' => 'schleswig-holstein'],
+        'th' => ['name' => 'Thüringen', 'route' => 'thueringen']
+    ];
+@endphp
     <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -10,150 +34,39 @@
           content="Ferien heute, Schulferien, Bundesländer, Deutschland, Ferienkalender, Ferienübersicht"/>
     <meta name="author" content="SindHeuteFerien.de"/>
     <title>Sind heute Ferien?</title>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #f9f9f9;
-            color: #111;
-        }
-
-        header {
-            background-color: #1e40af;
-            color: white;
-            padding: 2rem 1rem;
-            text-align: center;
-        }
-
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        header p {
-            font-size: 1.25rem;
-        }
-
-        main {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-
-        .info {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .info p {
-            font-size: 1.1rem;
-            color: #333;
-        }
-
-        .state-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        .state {
-            background: white;
-            border-radius: 12px;
-            padding: 1rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .state h3 {
-            margin: 0.5rem 0;
-        }
-
-        .holiday-yes {
-            color: #16a34a;
-            font-weight: bold;
-        }
-
-        .holiday-no {
-            color: #dc2626;
-            font-weight: bold;
-        }
-
-        footer {
-            text-align: center;
-            padding: 2rem 1rem;
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        @media (max-width: 600px) {
-            header h1 {
-                font-size: 2rem;
-            }
-
-            .info p {
-                font-size: 1rem;
-            }
-        }
-
-        .state a {
-            color: #1a202c;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .state a:hover {
-            color: #1e40af;
-            text-decoration: underline;
-        }
-
-        .state:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-    </style>
+    <x-parts.style/>
 </head>
 <body>
 <header>
     <h1>Sind heute Ferien?</h1>
     <p>Hier findest du auf einen Blick, in welchen Bundesländern heute Schulferien sind.</p>
 </header>
-<main>
 
+<nav class="navbar">
+    <ul>
+        @foreach($bundeslaender as $kuerzel => $land)
+            <li>
+                <a href="#in-{{$kuerzel}}">{{ strtoupper($kuerzel) }}</a>
+            </li>
+        @endforeach
+    </ul>
+</nav>
+<main>
     <section class="info">
-        <p>Heute ist der {{ date('d.m.Y') }}.</p>
+        <h2>
+            Übersicht aller Bundesländer
+        </h2>
+        @if(SchoolHolidayController::getNow()->isToday())
+            <p>Heute ist der {{ SchoolHolidayController::getNow()->format("d.m.Y") }}.</p>
+        @else
+            <p>Es werden Daten für den {{ SchoolHolidayController::getNow()->format("d.m.Y") }} angezeigt.</p>
+        @endif
         <p>Hier siehst du, in welchen Bundesländern heute Schulferien sind:</p>
     </section>
 
-    @php
-        $bundeslaender = [
-            'bw' => ['name' => 'Baden-Württemberg', 'route' => 'baden-wuerttemberg'],
-            'by' => ['name' => 'Bayern', 'route' => 'bayern'],
-            'be' => ['name' => 'Berlin', 'route' => 'berlin'],
-            'bb' => ['name' => 'Brandenburg', 'route' => 'brandenburg'],
-            'hb' => ['name' => 'Bremen', 'route' => 'bremen'],
-            'hh' => ['name' => 'Hamburg', 'route' => 'hamburg'],
-            'he' => ['name' => 'Hessen', 'route' => 'hessen'],
-            'mv' => ['name' => 'Mecklenburg-Vorpommern', 'route' => 'mecklenburg-vorpommern'],
-            'ni' => ['name' => 'Niedersachsen', 'route' => 'niedersachsen'],
-            'nw' => ['name' => 'Nordrhein-Westfalen', 'route' => 'nordrhein-westfalen'],
-            'rp' => ['name' => 'Rheinland-Pfalz', 'route' => 'rheinland-pfalz'],
-            'sl' => ['name' => 'Saarland', 'route' => 'saarland'],
-            'sn' => ['name' => 'Sachsen', 'route' => 'sachsen'],
-            'st' => ['name' => 'Sachsen-Anhalt', 'route' => 'sachsen-anhalt'],
-            'sh' => ['name' => 'Schleswig-Holstein', 'route' => 'schleswig-holstein'],
-            'th' => ['name' => 'Thüringen', 'route' => 'thueringen']
-        ];
-    @endphp
-
     <div class="state-list">
         @foreach($bundeslaender as $kuerzel => $land)
-            <div class="state">
+            <div class="state" id="in-{{ $kuerzel }}">
                 <h3>
                     <a href="{{ route('bundesland', $land['route']) }}">
                         {{ $land['name'] }}
@@ -161,27 +74,35 @@
                 </h3>
                 @if(SchoolHolidayController::areTodayHolidays($kuerzel))
                     @php $holidayEnd = SchoolHolidayController::holidaysEndInDays($kuerzel); @endphp
-                    <p class="holiday-yes">Ja, heute sind Ferien!
-                        @if($holidayEnd)
-                            <br><br>Die {{$holidayEnd['holiday_name']}}
-                            {{ $holidayEnd['days'] == 0 ? 'enden heute' :
-           ($holidayEnd['days'] == 1 ? 'enden morgen' :
-           'enden in ' . $holidayEnd['days'] . ' Tagen') }}
-                            ({{ $holidayEnd['start_date'] }} - {{ $holidayEnd['end_date'] }})
-                        @endif
-                    </p>
+                    <div class="holiday-yes">
+                        <p>
+                            <u>Ja</u>, hier sind heute sind Ferien!
+                        </p>
+                        <p>
+                            {!! $label->getEndingInString($holidayEnd) !!}
+                        </p>
+                        <p class="muted">
+                            {{sprintf("(%s - %s)", $holidayEnd['start_date'], $holidayEnd['end_date'])}}
+                        </p>
+                    </div>
                 @else
                     @php $nextHoliday = SchoolHolidayController::getDaysToNextHolidays($kuerzel); @endphp
-                    <p class="holiday-no">Nein, heute sind keine Ferien.
+                    <div class="holiday-no">
+                        <p>
+                            <u>Nein</u>, heute sind keine Ferien.
+                        </p>
                         @if($nextHoliday)
-                            <br><br>Aber
-                            in {{$nextHoliday['days']}} {{ $nextHoliday['days'] === 1 ? 'Tag beginnen' : 'Tagen beginnen' }}
-                            die {{$nextHoliday['holiday_name']}}
-                            ({{$nextHoliday['start_date']}} - {{$nextHoliday['end_date']}})
+                            <p>
+                                {!! $label->getButNextAreStartingInString($nextHoliday) !!}
+                            </p>
+                            <p class="muted">
+                                {{sprintf("(%s - %s)", $nextHoliday['start_date'], $nextHoliday['end_date'])}}
+                            </p>
                         @else
-                            <br>Wir laden gerade die nächsten Ferientermine...
+                            <br>
+                            Wir laden gerade die nächsten Ferientermine...
                         @endif
-                    </p>
+                    </div>
                 @endif
             </div>
         @endforeach
