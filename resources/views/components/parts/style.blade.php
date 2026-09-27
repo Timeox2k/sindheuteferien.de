@@ -541,13 +541,130 @@
             gap: 0.5rem;
         }
 
-        .facts-table th {
-            width: 45%;
-        }
-
         .next-holiday-details {
             flex-direction: column;
             gap: 0.4rem;
+        }
+
+        /* Facts table mobile layout */
+        .facts-table,
+        .facts-table tbody,
+        .facts-table tr,
+        .facts-table th,
+        .facts-table td {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .facts-table tr {
+            padding: 0.65rem 0.85rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .facts-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .facts-table th {
+            padding: 0 0 0.2rem 0;
+            border: none;
+            font-size: 0.775rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: #64748b;
+            font-weight: 700;
+            width: auto;
+        }
+
+        .facts-table td {
+            padding: 0;
+            border: none;
+            font-size: 0.95rem;
+            color: #0f172a;
+        }
+
+        /* Mobile Card Layout for Holiday Tables */
+        .table-container {
+            border: none;
+            background: transparent;
+            margin: 0.75rem 0 1rem;
+            overflow-x: visible;
+        }
+
+        .holiday-table,
+        .holiday-table tbody,
+        .holiday-table tr,
+        .holiday-table td {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .holiday-table thead {
+            display: none;
+        }
+
+        .holiday-table tbody tr {
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+            padding: 0.85rem 1rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        .holiday-table tbody tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+
+        .holiday-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .holiday-table td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+            text-align: right;
+        }
+
+        .holiday-table td:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        /* Title / Primary cell at top of each card */
+        .holiday-table td:first-child {
+            font-size: 1.05rem;
+            font-weight: 700;
+            padding-top: 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 0.35rem;
+            text-align: left;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .holiday-table td:first-child::before {
+            display: none !important;
+        }
+
+        .holiday-table td[data-label]::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            text-align: left;
+            margin-right: 1rem;
+            flex-shrink: 0;
         }
     }
 

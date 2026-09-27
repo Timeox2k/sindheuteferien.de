@@ -84,22 +84,22 @@
                         <tbody>
                             @foreach($otherYears as $oy)
                                 <tr @if($oy['year'] == $holidayYear) style="background-color: #eff6ff; font-weight: 600;" @endif>
-                                    <td>
+                                    <td data-label="Jahr">
                                         {{ $oy['name'] }} {{ $oy['year'] }}
                                         @if($oy['year'] == $holidayYear)
                                             <span class="status-pill active" style="margin-left: 0.5rem;">Aktuell</span>
                                         @endif
                                     </td>
-                                    <td>{{ $oy['start_date'] }} – {{ $oy['end_date'] }}</td>
-                                    <td>{{ $oy['duration'] }} Tage</td>
-                                    <td>
+                                    <td data-label="Zeitraum">{{ $oy['start_date'] }} – {{ $oy['end_date'] }}</td>
+                                    <td data-label="Dauer">{{ $oy['duration'] }} Tage</td>
+                                    <td data-label="Kalenderwoche">
                                         @if($oy['start_kw'] === $oy['end_kw'])
                                             KW {{ $oy['start_kw'] }}
                                         @else
                                             KW {{ $oy['start_kw'] }}–{{ $oy['end_kw'] }}
                                         @endif
                                     </td>
-                                    <td>
+                                    <td data-label="Details">
                                         @if($oy['year'] != $holidayYear)
                                             <a href="{{ route('holiday.detail', ['bundesland' => $stateSlug, 'ferien' => $oy['slug']]) }}">
                                                 Termine {{ $oy['year'] }} →
@@ -135,21 +135,21 @@
                         </thead>
                         <tbody>
                             <tr style="background-color: #eff6ff; font-weight: 600;">
-                                <td>{{ $stateName }} ({{ $stateShort }})</td>
-                                <td>{{ $holiday['start_date'] }} – {{ $holiday['end_date'] }}</td>
-                                <td>{{ $holiday['duration'] }} Tage</td>
-                                <td><span class="status-pill active">Diese Ansicht</span></td>
+                                <td data-label="Bundesland">{{ $stateName }} ({{ $stateShort }})</td>
+                                <td data-label="Zeitraum">{{ $holiday['start_date'] }} – {{ $holiday['end_date'] }}</td>
+                                <td data-label="Dauer">{{ $holiday['duration'] }} Tage</td>
+                                <td data-label="Link"><span class="status-pill active">Diese Ansicht</span></td>
                             </tr>
                             @foreach($otherStates as $os)
                                 <tr>
-                                    <td>
+                                    <td data-label="Bundesland">
                                         <a href="{{ route('bundesland', ['bundesland' => $os['state_slug']]) }}">
-                                            {{ $os['state_name'] }}
+                                             {{ $os['state_name'] }}
                                         </a>
                                     </td>
-                                    <td>{{ $os['start_date'] }} – {{ $os['end_date'] }}</td>
-                                    <td>{{ $os['duration'] }} Tage</td>
-                                    <td>
+                                    <td data-label="Zeitraum">{{ $os['start_date'] }} – {{ $os['end_date'] }}</td>
+                                    <td data-label="Dauer">{{ $os['duration'] }} Tage</td>
+                                    <td data-label="Link">
                                         <a href="{{ route('holiday.detail', ['bundesland' => $os['state_slug'], 'ferien' => $os['slug']]) }}">
                                             Termine {{ $os['state_short'] }} →
                                         </a>

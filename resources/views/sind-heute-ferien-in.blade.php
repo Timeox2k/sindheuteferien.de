@@ -98,21 +98,21 @@
                             <tbody>
                                 @foreach($groupedHolidays[$year] as $holiday)
                                     <tr>
-                                        <td>
+                                        <td data-label="Ferien">
                                             <a href="{{ route('holiday.detail', ['bundesland' => $stateSlug, 'ferien' => $holiday['slug']]) }}">
                                                 {{ $holiday['name'] }} {{ $year }}
                                             </a>
                                         </td>
-                                        <td>{{ $holiday['start_date'] }} – {{ $holiday['end_date'] }}</td>
-                                        <td>{{ $holiday['duration'] }} Tage</td>
-                                        <td>
+                                        <td data-label="Zeitraum">{{ $holiday['start_date'] }} – {{ $holiday['end_date'] }}</td>
+                                        <td data-label="Dauer">{{ $holiday['duration'] }} Tage</td>
+                                        <td data-label="Kalenderwoche">
                                             @if($holiday['start_kw'] === $holiday['end_kw'])
                                                 KW {{ $holiday['start_kw'] }}
                                             @else
                                                 KW {{ $holiday['start_kw'] }}–{{ $holiday['end_kw'] }}
                                             @endif
                                         </td>
-                                        <td>
+                                        <td data-label="Status">
                                             @if($holiday['status'] === 'active')
                                                 <span class="status-pill active">Läuft gerade</span>
                                             @elseif($holiday['status'] === 'upcoming')
