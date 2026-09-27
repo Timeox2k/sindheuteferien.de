@@ -32,6 +32,12 @@
         <meta name="twitter:description" content="{!! Page::getDescription() !!}"/>
     @endif
 
+    <!-- Favicon & Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png"/>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+
     <title>
         @if(Page::hasTitle())
             {!! Page::getTitle() !!}
