@@ -7,9 +7,12 @@
 
 namespace App\Services;
 
+use App\Models\SchoolHoliday;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class HolidayService
 {
@@ -17,47 +20,59 @@ class HolidayService
     {
         $request = app(Request::class);
 
-        // You can use ?now=2025-05-01 to test other dates, for example
         if ($request->has("now")) {
             try {
                 return $request->date('now');
-            }
-            catch (\Exception $e) {
-                // Pff, then we just use the current date
+            } catch (\Exception $e) {
             }
         }
 
         return now();
     }
 
-    /**
-     * @param string $bundeslandSlug
-     * @return string The ISO 3166-2 code for the Bundesland, fallback to $bundeslandSlug
-     */
-    private function getBundeslandCode(string $bundeslandSlug): string
+    public function getAllStates(): array
     {
-        $bundeslandMap = $this->getBundslandSlugMap();
-        return Arr::get($bundeslandMap, $bundeslandSlug, $bundeslandSlug);
+        return config('holiday.states', []);
     }
 
-    public function areTodayHolidays($bundesland)
+    public function getStateBySlug(string $slug): ?array
+    {
+        return collect($this->getAllStates())->firstWhere('slug', $slug);
+    }
+
+    public function getStateByKuerzel(string $kuerzel): ?array
+    {
+        return collect($this->getAllStates())->firstWhere('kuerzel', strtolower($kuerzel));
+    }
+
+    /**
+     * @param string $bundeslandSlugOrKuerzel
+     * @return string The ISO 3166-2 code for the Bundesland
+     */
+    public function getBundeslandCode(string $bundeslandSlugOrKuerzel): string
+    {
+        $state = $this->getStateBySlug($bundeslandSlugOrKuerzel)
+            ?? $this->getStateByKuerzel($bundeslandSlugOrKuerzel);
+
+        if ($state) {
+            return $state['iso'];
+        }
+
+        $bundeslandMap = $this->getBundeslandSlugMap();
+        return Arr::get($bundeslandMap, $bundeslandSlugOrKuerzel, $bundeslandSlugOrKuerzel);
+    }
+
+    public function areTodayHolidays(string $bundesland): bool
     {
         $today = $this->getNow()->format('Y-m-d');
-
-        // Konvertierung der Kürzel
         $bundeslandCode = $this->getBundeslandCode($bundesland);
-        // Alle aktuellen Ferien abrufen und in PHP filtern
-        $currentHolidays = \App\Models\SchoolHoliday::whereDate('start_date', '<=', $today)
+
+        $currentHolidays = SchoolHoliday::whereDate('start_date', '<=', $today)
             ->whereDate('end_date', '>=', $today)
             ->get();
 
-        // Manuell filtern
         foreach ($currentHolidays as $holiday) {
-            if ($holiday->nationwide) {
-                return true;
-            }
-
-            if ($this->matchesBundesland($holiday->subdivisions, $bundeslandCode)) {
+            if ($holiday->nationwide || $this->matchesBundesland($holiday->subdivisions, $bundeslandCode)) {
                 return true;
             }
         }
@@ -65,21 +80,17 @@ class HolidayService
         return false;
     }
 
-    public function getDaysToNextHolidays($bundesland, $minDurationDays = 2)
+    public function getDaysToNextHolidays(string $bundesland, int $minDurationDays = 2): ?array
     {
         $today = $this->getNow()->startOfDay();
         $todayFormatted = $today->format('Y-m-d');
-
-        // Konvertierung der Kürzel
         $bundeslandCode = $this->getBundeslandCode($bundesland);
 
-        // Prüfen, ob heute bereits Ferien sind
         if ($this->areTodayHolidays($bundesland)) {
-            return 0;
+            return null;
         }
 
-        // Nächste Ferien finden, die nach heute beginnen
-        $nextHolidays = \App\Models\SchoolHoliday::whereDate('start_date', '>', $todayFormatted)
+        $nextHolidays = SchoolHoliday::whereDate('start_date', '>', $todayFormatted)
             ->whereRaw('julianday(end_date) - julianday(start_date) >= ?', [$minDurationDays - 1])
             ->orderBy('start_date', 'asc')
             ->get();
@@ -88,15 +99,9 @@ class HolidayService
             return null;
         }
 
-        // Finde die frühesten Ferien, für die das Bundesland gilt
         $nextHoliday = null;
         foreach ($nextHolidays as $holiday) {
-            if ($holiday->nationwide) {
-                $nextHoliday = $holiday;
-                break;
-            }
-
-            if ($this->matchesBundesland($holiday->subdivisions, $bundeslandCode)) {
+            if ($holiday->nationwide || $this->matchesBundesland($holiday->subdivisions, $bundeslandCode)) {
                 $nextHoliday = $holiday;
                 break;
             }
@@ -106,35 +111,32 @@ class HolidayService
             return null;
         }
 
-        // Berechne die Anzahl der Tage zwischen heute und dem Beginn der nächsten Ferien
-        $nextHolidayStartDate = \Carbon\Carbon::parse($nextHoliday->start_date)->startOfDay();
-        $nextHolidayEndDate = \Carbon\Carbon::parse($nextHoliday->end_date)->startOfDay();
+        $nextHolidayStartDate = Carbon::parse($nextHoliday->start_date)->startOfDay();
+        $nextHolidayEndDate = Carbon::parse($nextHoliday->end_date)->startOfDay();
         $daysUntilNextHoliday = $today->diffInDays($nextHolidayStartDate);
         $holidayDuration = $nextHolidayStartDate->diffInDays($nextHolidayEndDate) + 1;
 
         return [
             'days'         => (int)$daysUntilNextHoliday,
             'holiday_name' => $nextHoliday->name,
+            'slug'         => $this->generateHolidaySlug($nextHoliday),
             'start_date'   => $nextHolidayStartDate->format('d.m.Y'),
             'end_date'     => $nextHolidayEndDate->format('d.m.Y'),
-            'duration'     => $holidayDuration
+            'duration'     => $holidayDuration,
         ];
     }
 
-    public function holidaysEndInDays($bundesland)
+    public function holidaysEndInDays(string $bundesland): ?array
     {
-        // Get the current date
         $today = $this->getNow()->startOfDay();
         $todayFormatted = $today->format('Y-m-d');
         $bundeslandCode = $this->getBundeslandCode($bundesland);
 
-        // Prüfen, ob heute überhaupt Ferien sind
         if (!$this->areTodayHolidays($bundesland)) {
             return null;
         }
 
-        // Finde aktuelle Ferien
-        $currentHolidays = \App\Models\SchoolHoliday::whereDate('start_date', '<=', $todayFormatted)
+        $currentHolidays = SchoolHoliday::whereDate('start_date', '<=', $todayFormatted)
             ->whereDate('end_date', '>=', $todayFormatted)
             ->orderBy('end_date', 'asc')
             ->get();
@@ -143,15 +145,9 @@ class HolidayService
             return null;
         }
 
-        // Finde die aktuellen Ferien für das Bundesland
         $currentHoliday = null;
         foreach ($currentHolidays as $holiday) {
-            if ($holiday->nationwide) {
-                $currentHoliday = $holiday;
-                break;
-            }
-
-            if ($this->matchesBundesland($holiday->subdivisions, $bundeslandCode)) {
+            if ($holiday->nationwide || $this->matchesBundesland($holiday->subdivisions, $bundeslandCode)) {
                 $currentHoliday = $holiday;
                 break;
             }
@@ -161,41 +157,181 @@ class HolidayService
             return null;
         }
 
-        // Berechne die Anzahl der Tage bis zum Ende der Ferien
-        $holidayEndDate = \Carbon\Carbon::parse($currentHoliday->end_date)->startOfDay();
+        $holidayEndDate = Carbon::parse($currentHoliday->end_date)->startOfDay();
         $daysUntilHolidayEnd = $today->diffInDays($holidayEndDate);
 
         return [
             'days'         => (int)$daysUntilHolidayEnd,
             'holiday_name' => $currentHoliday->name,
-            'start_date'   => \Carbon\Carbon::parse($currentHoliday->start_date)->format('d.m.Y'),
-            'end_date'     => $holidayEndDate->format('d.m.Y')
+            'slug'         => $this->generateHolidaySlug($currentHoliday),
+            'start_date'   => Carbon::parse($currentHoliday->start_date)->format('d.m.Y'),
+            'end_date'     => $holidayEndDate->format('d.m.Y'),
         ];
     }
 
-    private function matchesBundesland($subdivisions, $bundeslandCode)
+    public function generateHolidaySlug(SchoolHoliday $holiday): string
     {
-        // Überprüfe, ob $subdivisions ein String ist und dekodiere ihn in diesem Fall
+        $nameSlug = Str::slug($holiday->name);
+        $year = Carbon::parse($holiday->start_date)->year;
+        return "{$nameSlug}-{$year}";
+    }
+
+    public function getHolidaysForBundesland(string $bundesland, ?int $year = null): Collection
+    {
+        $bundeslandCode = $this->getBundeslandCode($bundesland);
+        $today = $this->getNow()->startOfDay();
+
+        $query = SchoolHoliday::query();
+
+        if ($year !== null) {
+            $query->where(function ($q) use ($year) {
+                $q->whereYear('start_date', $year)
+                  ->orWhereYear('end_date', $year);
+            });
+        }
+
+        $holidays = $query->orderBy('start_date', 'asc')->get();
+
+        return $holidays->filter(function (SchoolHoliday $holiday) use ($bundeslandCode) {
+            return $holiday->nationwide || $this->matchesBundesland($holiday->subdivisions, $bundeslandCode);
+        })->map(function (SchoolHoliday $holiday) use ($today) {
+            $startDate = Carbon::parse($holiday->start_date)->startOfDay();
+            $endDate = Carbon::parse($holiday->end_date)->startOfDay();
+            $duration = $startDate->diffInDays($endDate) + 1;
+
+            $status = 'upcoming';
+            $daysDiff = $today->diffInDays($startDate, false);
+
+            if ($today->between($startDate, $endDate)) {
+                $status = 'active';
+            } elseif ($today->gt($endDate)) {
+                $status = 'past';
+            }
+
+            return [
+                'id'            => $holiday->id,
+                'name'          => $holiday->name,
+                'slug'          => $this->generateHolidaySlug($holiday),
+                'year'          => $startDate->year,
+                'start_date'    => $startDate->format('d.m.Y'),
+                'end_date'      => $endDate->format('d.m.Y'),
+                'start_date_iso'=> $startDate->format('Y-m-d'),
+                'end_date_iso'  => $endDate->format('Y-m-d'),
+                'duration'      => $duration,
+                'start_kw'      => $startDate->isoWeek(),
+                'end_kw'        => $endDate->isoWeek(),
+                'status'        => $status,
+                'days_diff'     => (int)$daysDiff,
+            ];
+        })->values();
+    }
+
+    public function getHolidaysGroupedByYear(string $bundesland, array $years = [2025, 2026, 2027]): array
+    {
+        $grouped = [];
+        foreach ($years as $yr) {
+            $holidays = $this->getHolidaysForBundesland($bundesland, $yr);
+            if ($holidays->isNotEmpty()) {
+                $grouped[$yr] = $holidays;
+            }
+        }
+        return $grouped;
+    }
+
+    public function getHolidayDetail(string $bundesland, string $holidaySlug): ?array
+    {
+        $state = $this->getStateBySlug($bundesland) ?? $this->getStateByKuerzel($bundesland);
+        if (!$state) {
+            return null;
+        }
+
+        $today = $this->getNow()->startOfDay();
+        $allHolidays = $this->getHolidaysForBundesland($state['kuerzel']);
+
+        $match = $allHolidays->firstWhere('slug', $holidaySlug);
+        if (!$match) {
+            return null;
+        }
+
+        $startDate = Carbon::createFromFormat('d.m.Y', $match['start_date'])->startOfDay();
+        $endDate = Carbon::createFromFormat('d.m.Y', $match['end_date'])->startOfDay();
+
+        $baseName = Str::slug($match['name']);
+        $allYearsSameHoliday = $allHolidays->filter(function ($h) use ($baseName) {
+            return Str::startsWith($h['slug'], $baseName . '-');
+        })->sortBy('year')->values();
+
+        $otherStatesComparison = [];
+        $targetYear = $match['year'];
+        foreach ($this->getAllStates() as $s) {
+            if ($s['kuerzel'] === $state['kuerzel']) {
+                continue;
+            }
+            $stateHolidays = $this->getHolidaysForBundesland($s['kuerzel'], $targetYear);
+            $foundSame = $stateHolidays->first(function ($h) use ($baseName) {
+                return Str::startsWith($h['slug'], $baseName . '-');
+            });
+
+            if ($foundSame) {
+                $otherStatesComparison[] = [
+                    'state_name' => $s['name'],
+                    'state_slug' => $s['slug'],
+                    'state_short'=> $s['short'],
+                    'start_date' => $foundSame['start_date'],
+                    'end_date'   => $foundSame['end_date'],
+                    'duration'   => $foundSame['duration'],
+                    'slug'       => $foundSame['slug'],
+                ];
+            }
+        }
+
+        return [
+            'state'             => $state,
+            'holiday'           => $match,
+            'start_carbon'      => $startDate,
+            'end_carbon'        => $endDate,
+            'days_until_start'  => (int)$today->diffInDays($startDate, false),
+            'days_until_end'    => (int)$today->diffInDays($endDate, false),
+            'other_years'       => $allYearsSameHoliday,
+            'other_states'      => $otherStatesComparison,
+        ];
+    }
+
+    public function getAllHolidaySlugsForSitemap(): array
+    {
+        $urls = [];
+        $states = $this->getAllStates();
+
+        foreach ($states as $state) {
+            $holidays = $this->getHolidaysForBundesland($state['kuerzel']);
+            foreach ($holidays as $holiday) {
+                $urls[] = [
+                    'state_slug'   => $state['slug'],
+                    'holiday_slug' => $holiday['slug'],
+                    'year'         => $holiday['year'],
+                ];
+            }
+        }
+
+        return $urls;
+    }
+
+    public function matchesBundesland($subdivisions, string $bundeslandCode): bool
+    {
         if (is_string($subdivisions)) {
             $subdivisions = json_decode($subdivisions, true);
         }
 
-        // Strukturprüfung und flexible Suche
         if (is_array($subdivisions)) {
-            // Durchsuche das Array nach dem Bundesland-Code
             $jsonString = json_encode($subdivisions);
-
             return strpos($jsonString, '"code":"' . $bundeslandCode . '"') !== false ||
-                strpos($jsonString, '"code":"' . $bundeslandCode . '-') !== false;
+                   strpos($jsonString, '"code":"' . $bundeslandCode . '-') !== false;
         }
 
         return false;
     }
 
-    /**
-     * @return mixed[]
-     */
-    private function getBundslandSlugMap(): array
+    private function getBundeslandSlugMap(): array
     {
         return collect(config('holiday.states'))->pluck('iso', 'kuerzel')->toArray();
     }

@@ -36,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(PageService::class, function () {
             $appName = config('app.name');
             if ($appName === "Laravel") {
-                $appName = "SindHeuteFerien.de"; // We're lazy ^^
+                $appName = "SindHeuteFerien.de";
             }
 
             $service = new \App\Services\PageService($appName);
