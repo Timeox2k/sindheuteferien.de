@@ -1,114 +1,88 @@
 @php
-    use App\Facades\Page;use App\Services\HolidayService;use App\Services\NaturalLanguageService;
+    use App\Facades\Page;
+    use App\Services\HolidayService;
+    use App\Services\NaturalLanguageService;
 
     $holidayService = app(HolidayService::class);
     $label = app(NaturalLanguageService::class);
-@endphp
-@php
-    $bundeslaender = [
-        'bw' => ['name' => 'Baden-Württemberg', 'route' => 'baden-wuerttemberg'],
-        'by' => ['name' => 'Bayern', 'route' => 'bayern'],
-        'be' => ['name' => 'Berlin', 'route' => 'berlin'],
-        'bb' => ['name' => 'Brandenburg', 'route' => 'brandenburg'],
-        'hb' => ['name' => 'Bremen', 'route' => 'bremen'],
-        'hh' => ['name' => 'Hamburg', 'route' => 'hamburg'],
-        'he' => ['name' => 'Hessen', 'route' => 'hessen'],
-        'mv' => ['name' => 'Mecklenburg-Vorpommern', 'route' => 'mecklenburg-vorpommern'],
-        'ni' => ['name' => 'Niedersachsen', 'route' => 'niedersachsen'],
-        'nw' => ['name' => 'Nordrhein-Westfalen', 'route' => 'nordrhein-westfalen'],
-        'rp' => ['name' => 'Rheinland-Pfalz', 'route' => 'rheinland-pfalz'],
-        'sl' => ['name' => 'Saarland', 'route' => 'saarland'],
-        'sn' => ['name' => 'Sachsen', 'route' => 'sachsen'],
-        'st' => ['name' => 'Sachsen-Anhalt', 'route' => 'sachsen-anhalt'],
-        'sh' => ['name' => 'Schleswig-Holstein', 'route' => 'schleswig-holstein'],
-        'th' => ['name' => 'Thüringen', 'route' => 'thueringen']
-    ];
+    $states = $holidayService->getAllStates();
+    $currentYear = $holidayService->getNow()->year;
 @endphp
 
 <x-layout.primary>
     <x-slot:header>
         <h1>Sind heute Ferien?</h1>
-        <p>Hier findest du auf einen Blick, in welchen Bundesländern heute Schulferien sind.</p>
+        <p>Tagesaktueller Status, nächste Ferientermine und Schulferien {{ $currentYear }} / {{ $currentYear + 1 }} für alle 16 deutschen Bundesländer.</p>
     </x-slot:header>
-    <nav class="navbar">
+
+    <nav class="navbar" aria-label="Schnellnavigation Bundesländer">
         <ul>
-            @foreach($bundeslaender as $kuerzel => $land)
+            @foreach($states as $state)
                 <li>
-                    <a href="#in-{{$kuerzel}}">{{ strtoupper($kuerzel) }}</a>
+                    <a href="{{ route('bundesland', ['bundesland' => $state['slug']]) }}" title="Ferien in {{ $state['name'] }}">{{ $state['short'] }}</a>
                 </li>
             @endforeach
         </ul>
     </nav>
+
     <main>
-        <section class="info">
-            <h2>
-                Übersicht aller Bundesländer
-            </h2>
-            @if($holidayService->getNow()->isToday())
-                <p>Heute ist der {{ $holidayService->getNow()->format("d.m.Y") }}.</p>
-            @else
-                <p>Es werden Daten für den {{ $holidayService->getNow()->format("d.m.Y") }} angezeigt.</p>
-            @endif
-            <p>Hier siehst du, in welchen Bundesländern heute Schulferien sind:</p>
+        <section class="panel" style="margin-bottom: 1.5rem;">
+            <h2 class="panel-header" style="margin-bottom: 0.5rem;">Schulferien-Status am {{ $holidayService->getNow()->translatedFormat('l, d. F Y') }}</h2>
+            <p style="margin: 0; color: #475569; font-size: 0.95rem;">
+                Wähle ein Bundesland aus, um die detaillierten Termine, den aktuellen Countdown und die vollständigen Jahreskalender einzusehen:
+            </p>
         </section>
 
         <div class="state-list">
-            @foreach($bundeslaender as $kuerzel => $land)
-                <div class="state" id="in-{{ $kuerzel }}">
-                    <h3>
-                        <a href="{{ route('bundesland', $land['route']) }}">
-                            {{ $land['name'] }}
-                        </a>
-                    </h3>
-                    @if($holidayService->areTodayHolidays($kuerzel))
-                        @php $holidayEnd = $holidayService->holidaysEndInDays($kuerzel); @endphp
-                        <div class="holiday-yes">
-                            <p>
-                                <u>Ja</u>, hier sind heute sind Ferien!
-                            </p>
-                            <p>
-                                {!! $label->getEndingInString($holidayEnd) !!}
-                            </p>
-                            <p class="muted">
-                                {{sprintf("(%s - %s)", $holidayEnd['start_date'], $holidayEnd['end_date'])}}
-                            </p>
-                        </div>
-                    @else
-                        @php $nextHoliday = $holidayService->getDaysToNextHolidays($kuerzel); @endphp
-                        <div class="holiday-no">
-                            <p>
-                                <u>Nein</u>, heute sind keine Ferien.
-                            </p>
-                            @if($nextHoliday)
-                                <p>
-                                    {!! $label->getButNextAreStartingInString($nextHoliday) !!}
-                                </p>
-                                <p class="muted">
-                                    {{sprintf("(%s - %s)", $nextHoliday['start_date'], $nextHoliday['end_date'])}}
-                                </p>
-                            @else
-                                <br>
-                                Wir laden gerade die nächsten Ferientermine...
-                            @endif
-                        </div>
-                    @endif
-                </div>
+            @foreach($states as $state)
+                @php
+                    $kuerzel = $state['kuerzel'];
+                    $slug = $state['slug'];
+                    $name = $state['name'];
+                    $isHoliday = $holidayService->areTodayHolidays($kuerzel);
+                    $holidayEnd = $isHoliday ? $holidayService->holidaysEndInDays($kuerzel) : null;
+                    $nextHoliday = !$isHoliday ? $holidayService->getDaysToNextHolidays($kuerzel) : null;
+                @endphp
+                <a href="{{ route('bundesland', ['bundesland' => $slug]) }}" class="state-card" title="Ferienkalender für {{ $name }}">
+                    <div>
+                        <h3>{{ $name }}</h3>
+                        <p class="status-indicator {{ $isHoliday ? 'yes' : 'no' }}">
+                            {{ $isHoliday ? '● Heute Ferien' : '● Keine Ferien' }}
+                        </p>
+                    </div>
+                    <div style="margin-top: 0.75rem; font-size: 0.8rem; color: #64748b; border-top: 1px solid #f1f5f9; padding-top: 0.5rem;">
+                        @if($isHoliday && $holidayEnd)
+                            {{ $holidayEnd['holiday_name'] }} (bis {{ $holidayEnd['end_date'] }})
+                        @elseif($nextHoliday)
+                            Nächste: {{ $nextHoliday['holiday_name'] }} (in {{ $nextHoliday['days'] }} T.)
+                        @else
+                            Termine einsehen →
+                        @endif
+                    </div>
+                </a>
             @endforeach
         </div>
-        <section title="Schulferien heute – hat mein Bundesland heute frei?">
-            <h2>Schulferien heute – hat mein Bundesland heute frei?</h2>
-            <p>Auf sindheuteferien.de findest du schnell und unkompliziert heraus, ob heute in deinem Bundesland
-                Schulferien
-                sind. Perfekt für Eltern, Schüler/innen und Lehrer/innen, die wissen möchten, ob heute schulfrei ist
-                oder
-                wie weit die nächsten Ferien noch entfernt sind.</p>
+
+        <section class="panel" style="margin-top: 2rem;">
+            <h2 class="panel-header">Offizielle Schulferien in Deutschland – Termine & Regelungen</h2>
+            <p style="font-size: 0.95rem; color: #334155; line-height: 1.6;">
+                Die Termine für die Schulferien in den 16 Bundesländern werden von der Kultusministerkonferenz (KMK) koordiniert.
+                Gemäß dem Hamburger Abkommen beträgt die Gesamtdauer der Ferien innerhalb eines Schuljahres 75 Werktage (einschließlich 12 Samstage).
+                Während die Sommerferien zwischen den Ländern gestaffelt festgelegt werden, bestimmen die Länder die Termine für Herbst-,
+                Weihnachts-, Winter-, Oster- und Pfingstferien eigenständig.
+            </p>
         </section>
 
-        <section title="Wie erkennt sindheuteferien.de, ob heute Ferien sind?">
-            <h2>Wie erkennt sindheuteferien.de, ob heute Ferien sind?</h2>
-            <p>Wir erhalten die Schulferienpläne aller Bundesländer aus einer zuverlässigen Quelle und stellen sie dir
-                hier
-                übersichtlich dar. So kannst du auf einen Blick sehen, ob heute Ferien sind oder nicht.</p>
+        <section class="panel">
+            <h2 class="panel-header">Wichtige Bundesländer im Direktzugriff</h2>
+            <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.95rem; line-height: 1.8;">
+                <li><a href="{{ route('bundesland', ['bundesland' => 'nordrhein-westfalen']) }}" class="action-link">Schulferien in Nordrhein-Westfalen (NRW)</a></li>
+                <li><a href="{{ route('bundesland', ['bundesland' => 'bayern']) }}" class="action-link">Schulferien in Bayern (BY)</a></li>
+                <li><a href="{{ route('bundesland', ['bundesland' => 'baden-wuerttemberg']) }}" class="action-link">Schulferien in Baden-Württemberg (BW)</a></li>
+                <li><a href="{{ route('bundesland', ['bundesland' => 'niedersachsen']) }}" class="action-link">Schulferien in Niedersachsen (NI)</a></li>
+                <li><a href="{{ route('bundesland', ['bundesland' => 'hessen']) }}" class="action-link">Schulferien in Hessen (HE)</a></li>
+                <li><a href="{{ route('bundesland', ['bundesland' => 'sachsen']) }}" class="action-link">Schulferien in Sachsen (SN)</a></li>
+            </ul>
         </section>
     </main>
 </x-layout.primary>

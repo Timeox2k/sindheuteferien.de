@@ -1,210 +1,202 @@
-@php use App\Services\HolidayService;use App\Services\NaturalLanguageService; @endphp
 @php
+    use App\Services\HolidayService;
+    use App\Services\NaturalLanguageService;
+    $label = app(NaturalLanguageService::class);
     $holidayService = app(HolidayService::class);
 @endphp
-@php
-    $bundeslaender = [
-        'bw' => ['name' => 'Baden-Württemberg', 'route' => 'baden-wuerttemberg'],
-        'by' => ['name' => 'Bayern', 'route' => 'bayern'],
-        'be' => ['name' => 'Berlin', 'route' => 'berlin'],
-        'bb' => ['name' => 'Brandenburg', 'route' => 'brandenburg'],
-        'hb' => ['name' => 'Bremen', 'route' => 'bremen'],
-        'hh' => ['name' => 'Hamburg', 'route' => 'hamburg'],
-        'he' => ['name' => 'Hessen', 'route' => 'hessen'],
-        'mv' => ['name' => 'Mecklenburg-Vorpommern', 'route' => 'mecklenburg-vorpommern'],
-        'ni' => ['name' => 'Niedersachsen', 'route' => 'niedersachsen'],
-        'nw' => ['name' => 'Nordrhein-Westfalen', 'route' => 'nordrhein-westfalen'],
-        'rp' => ['name' => 'Rheinland-Pfalz', 'route' => 'rheinland-pfalz'],
-        'sl' => ['name' => 'Saarland', 'route' => 'saarland'],
-        'sn' => ['name' => 'Sachsen', 'route' => 'sachsen'],
-        'st' => ['name' => 'Sachsen-Anhalt', 'route' => 'sachsen-anhalt'],
-        'sh' => ['name' => 'Schleswig-Holstein', 'route' => 'schleswig-holstein'],
-        'th' => ['name' => 'Thüringen', 'route' => 'thueringen']
-    ];
-@endphp
+
 <x-layout.primary>
-    @php
-        $routeToKuerzel = [
-            'baden-wuerttemberg' => 'bw',
-            'bayern' => 'by',
-            'berlin' => 'be',
-            'brandenburg' => 'bb',
-            'bremen' => 'hb',
-            'hamburg' => 'hh',
-            'hessen' => 'he',
-            'mecklenburg-vorpommern' => 'mv',
-            'niedersachsen' => 'ni',
-            'nordrhein-westfalen' => 'nw',
-            'rheinland-pfalz' => 'rp',
-            'saarland' => 'sl',
-            'sachsen' => 'sn',
-            'sachsen-anhalt' => 'st',
-            'schleswig-holstein' => 'sh',
-            'thueringen' => 'th'
-        ];
-
-        $kuerzelToName = [
-            'bw' => 'Baden-Württemberg',
-            'by' => 'Bayern',
-            'be' => 'Berlin',
-            'bb' => 'Brandenburg',
-            'hb' => 'Bremen',
-            'hh' => 'Hamburg',
-            'he' => 'Hessen',
-            'mv' => 'Mecklenburg-Vorpommern',
-            'ni' => 'Niedersachsen',
-            'nw' => 'Nordrhein-Westfalen',
-            'rp' => 'Rheinland-Pfalz',
-            'sl' => 'Saarland',
-            'sn' => 'Sachsen',
-            'st' => 'Sachsen-Anhalt',
-            'sh' => 'Schleswig-Holstein',
-            'th' => 'Thüringen'
-        ];
-
-        $kuerzel = $bundesland;
-        $bundeslandName = $kuerzelToName[$kuerzel] ?? 'Deutschland';
-        $ferienStatus = $holidayService->areTodayHolidays($kuerzel) ? 'Ja' : 'Nein';
-    @endphp
     <x-slot:header>
-        <h1>Sind heute Ferien in {{ $bundeslandName }}?</h1>
-        <p>Aktuelle Schulferien und Ferienzeiten für {{ $bundeslandName }}</p>
+        <h1>Sind heute Ferien {{ $inPrefix }}{{ $stateName }}?</h1>
+        <p>Tagesaktueller Status, nächste Termine und Schulferien-Kalender {{ $currentYear }} / {{ $currentYear + 1 }} für {{ $stateName }} ({{ $stateShort }}).</p>
     </x-slot:header>
+
     <main>
-        <a href="{{route('home')}}" class="back-link">← Zurück zur Übersicht</a>
+        <nav class="breadcrumbs" aria-label="Pfadnavigation">
+            <a href="{{ route('home') }}">Startseite</a>
+            <span class="separator">›</span>
+            <span class="current">Ferien {{ $stateName }}</span>
+        </nav>
 
-        <section class="info">
-            <p>Heute ist der {{ $holidayService->getNow()->format('d.m.Y') }}</p>
-
-            @if($holidayService->areTodayHolidays($kuerzel))
-                @php $holidayEnd = $holidayService->holidaysEndInDays($kuerzel); @endphp
-                <p class="info-result holiday-yes">Ja, heute sind Ferien in {{ $bundeslandName }}!</p>
-
-                @if($holidayEnd)
-                    <div class="state">
-                        <h2>{{ $holidayEnd['holiday_name'] }}</h2>
-                        <p>
-                            Zeitraum: <strong>{{ $holidayEnd['start_date'] }} bis {{ $holidayEnd['end_date'] }}</strong>
-                        </p>
-                        <p>
-                            {!! app(NaturalLanguageService::class)
-                            ->multiChoice($holidayEnd['days'], [
-                                0 => 'Die Ferien enden heute',
-                                1 => 'Die Ferien enden morgen',
-                                2 => 'Die Ferien enden in %d Tagen'
-                            ]) !!}
-                            ({{ $holidayEnd['start_date'] }} - {{ $holidayEnd['end_date'] }})
+        <section class="status-box" id="status">
+            <div class="status-bar-header">
+                Ferien-Status für heute, den {{ $holidayService->getNow()->format('d.m.Y') }}
+            </div>
+            <div class="status-body">
+                @if($isTodayHoliday && $holidayEnd)
+                    <div class="status-banner is-holiday">
+                        <span class="status-banner-badge">Schulfrei</span>
+                        <p class="status-banner-text">
+                            Ja, heute sind Schulferien {{ $inPrefix }}{{ $stateName }}!
                         </p>
                     </div>
-                @endif
-            @else
-                @php $nextHoliday = $holidayService->getDaysToNextHolidays($kuerzel); @endphp
-                <p class="info-result holiday-no">Nein, heute sind keine Ferien in {{ $bundeslandName }}.</p>
-
-                @if($nextHoliday)
-                    <div class="holiday-details">
-                        <h2>Nächste Ferien: {{ $nextHoliday['holiday_name'] }}</h2>
-                        <p>Zeitraum: <strong>{{ $nextHoliday['start_date'] }}
-                                bis {{ $nextHoliday['end_date'] }}</strong></p>
-                        <p>
-                            Die Ferien beginnen
-                            in {{ $nextHoliday['days'] }} {{ $nextHoliday['days'] === 1 ? 'Tag' : 'Tagen' }}
-                            und dauern {{ $nextHoliday['duration'] }} Tage.
-                        </p>
+                    <div class="next-holiday-notice">
+                        <h3>Laufende Ferien: {{ $holidayEnd['holiday_name'] }}</h3>
+                        <div class="next-holiday-details">
+                            <div class="item">Zeitraum: <strong>{{ $holidayEnd['start_date'] }} bis {{ $holidayEnd['end_date'] }}</strong></div>
+                            <div class="item">
+                                @if($holidayEnd['days'] === 0)
+                                    Status: <strong>Enden heute</strong>
+                                @elseif($holidayEnd['days'] === 1)
+                                    Status: <strong>Enden morgen</strong>
+                                @else
+                                    Status: <strong>Noch {{ $holidayEnd['days'] }} Tage bis zum Schulstart</strong>
+                                @endif
+                            </div>
+                        </div>
+                        <a href="{{ route('holiday.detail', ['bundesland' => $stateSlug, 'ferien' => $holidayEnd['slug']]) }}" class="action-link">
+                            Detailseite zu den {{ $holidayEnd['holiday_name'] }} öffnen →
+                        </a>
                     </div>
                 @else
-                    <p>Wir laden gerade die nächsten Ferientermine...</p>
-                @endif
-            @endif
-        </section>
+                    <div class="status-banner is-not-holiday">
+                        <span class="status-banner-badge">Regulärer Unterricht</span>
+                        <p class="status-banner-text">
+                            Nein, heute sind keine Ferien {{ $inPrefix }}{{ $stateName }}.
+                        </p>
+                    </div>
 
-        <section>
-            <h2>Schulferien {{ date('Y') }} in {{ $bundeslandName }}</h2>
-            <p>Hier findest du alle Informationen zu den aktuellen und kommenden Schulferien in {{ $bundeslandName }}.
-                Unsere Daten werden regelmäßig aktualisiert, damit du immer zuverlässige Informationen erhältst.</p>
-
-            <p>In {{ $bundeslandName }} gibt es verschiedene Ferienarten:</p>
-            <ul>
-                <li>Winterferien (falls vorhanden)</li>
-                <li>Osterferien / Frühlingsferien</li>
-                <li>Pfingstferien (in manchen Bundesländern)</li>
-                <li>Sommerferien</li>
-                <li>Herbstferien</li>
-                <li>Weihnachtsferien</li>
-            </ul>
-
-            <p>Die genauen Termine werden von der Kultusministerkonferenz festgelegt und können sich von Jahr zu Jahr
-                leicht verschieben.</p>
-        </section>
-
-        <section class="other-states">
-            <h2>Ferienzeiten in anderen Bundesländern</h2>
-            <p>Schulferien unterscheiden sich je nach Bundesland. Hier kannst du die aktuellen Ferienzeiten für andere
-                Bundesländer prüfen:</p>
-
-            @php
-                $bundeslaender = [
-                    'bw' => ['name' => 'Baden-Württemberg', 'route' => 'baden-wuerttemberg'],
-                    'by' => ['name' => 'Bayern', 'route' => 'bayern'],
-                    'be' => ['name' => 'Berlin', 'route' => 'berlin'],
-                    'bb' => ['name' => 'Brandenburg', 'route' => 'brandenburg'],
-                    'hb' => ['name' => 'Bremen', 'route' => 'bremen'],
-                    'hh' => ['name' => 'Hamburg', 'route' => 'hamburg'],
-                    'he' => ['name' => 'Hessen', 'route' => 'hessen'],
-                    'mv' => ['name' => 'Mecklenburg-Vorpommern', 'route' => 'mecklenburg-vorpommern'],
-                    'ni' => ['name' => 'Niedersachsen', 'route' => 'niedersachsen'],
-                    'nw' => ['name' => 'Nordrhein-Westfalen', 'route' => 'nordrhein-westfalen'],
-                    'rp' => ['name' => 'Rheinland-Pfalz', 'route' => 'rheinland-pfalz'],
-                    'sl' => ['name' => 'Saarland', 'route' => 'saarland'],
-                    'sn' => ['name' => 'Sachsen', 'route' => 'sachsen'],
-                    'st' => ['name' => 'Sachsen-Anhalt', 'route' => 'sachsen-anhalt'],
-                    'sh' => ['name' => 'Schleswig-Holstein', 'route' => 'schleswig-holstein'],
-                    'th' => ['name' => 'Thüringen', 'route' => 'thueringen']
-                ];
-            @endphp
-
-            <div class="state-list">
-                @foreach($bundeslaender as $k => $land)
-                    @if($k !== $kuerzel)
-                        <div class="state state-sm">
-                            <h3>
-                                <a href="{{ route('bundesland', $land['route']) }}"
-                                   title="Ferien in {{ $land['name'] }}">
-                                    {{ $land['name'] }}
-                                </a>
-                            </h3>
-                            <p class="holiday-status">
-                                @if($holidayService->areTodayHolidays($k))
-                                    <span class="holiday-yes">Heute Ferien</span>
-                                @else
-                                    <span class="holiday-no">Keine Ferien</span>
-                                @endif
-                            </p>
+                    @if($nextHoliday)
+                        <div class="next-holiday-notice" id="naechste-ferien">
+                            <h3>Nächste Schulferien in {{ $stateName }}</h3>
+                            <div class="next-holiday-details">
+                                <div class="item">Ferien: <strong>{{ $nextHoliday['holiday_name'] }}</strong></div>
+                                <div class="item">Zeitraum: <strong>{{ $nextHoliday['start_date'] }} – {{ $nextHoliday['end_date'] }}</strong></div>
+                                <div class="item">Dauer: <strong>{{ $nextHoliday['duration'] }} freie Tage</strong></div>
+                                <div class="item">
+                                    <span class="countdown-tag">In {{ $nextHoliday['days'] }} {{ $nextHoliday['days'] === 1 ? 'Tag' : 'Tagen' }}</span>
+                                </div>
+                            </div>
+                            <a href="{{ route('holiday.detail', ['bundesland' => $stateSlug, 'ferien' => $nextHoliday['slug']]) }}" class="action-link">
+                                Details zu den {{ $nextHoliday['holiday_name'] }} {{ $stateShort }} ansehen →
+                            </a>
                         </div>
                     @endif
-                @endforeach
+                @endif
             </div>
         </section>
 
-        <section>
-            <h2>Häufige Fragen zu Schulferien in {{ $bundeslandName }}</h2>
+        @foreach([$currentYear, $currentYear + 1, $currentYear - 1] as $year)
+            @if(isset($groupedHolidays[$year]) && $groupedHolidays[$year]->isNotEmpty())
+                <section class="panel" id="ferien-{{ $year }}">
+                    <h2 class="panel-header">Schulferien {{ $year }} in {{ $stateName }} ({{ $stateShort }})</h2>
+                    <p style="font-size: 0.95rem; color: #475569; margin-top: 0;">
+                        Offizielle Ferientermine der Kultusministerkonferenz für {{ $stateName }} im Jahr {{ $year }}:
+                    </p>
 
-            <h3>Wann beginnen die nächsten Ferien in {{ $bundeslandName }}?</h3>
-            @php $nextHoliday = $holidayService->getDaysToNextHolidays($kuerzel);
-            @endphp
-            @if($nextHoliday)
-                <p>Die nächsten Ferien in {{ $bundeslandName }} sind die {{ $nextHoliday['holiday_name'] }}.
-                    Sie beginnen am {{ $nextHoliday['start_date'] }} und enden am {{ $nextHoliday['end_date'] }}.</p>
-            @else
-                <p>Zur Zeit sind Ferien in {{ $bundeslandName }}!</p>
+                    <div class="table-container">
+                        <table class="holiday-table">
+                            <thead>
+                                <tr>
+                                    <th>Ferien</th>
+                                    <th>Zeitraum</th>
+                                    <th>Dauer</th>
+                                    <th>Kalenderwoche</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($groupedHolidays[$year] as $holiday)
+                                    <tr>
+                                        <td>
+                                            <a href="{{ route('holiday.detail', ['bundesland' => $stateSlug, 'ferien' => $holiday['slug']]) }}">
+                                                {{ $holiday['name'] }} {{ $year }}
+                                            </a>
+                                        </td>
+                                        <td>{{ $holiday['start_date'] }} – {{ $holiday['end_date'] }}</td>
+                                        <td>{{ $holiday['duration'] }} Tage</td>
+                                        <td>
+                                            @if($holiday['start_kw'] === $holiday['end_kw'])
+                                                KW {{ $holiday['start_kw'] }}
+                                            @else
+                                                KW {{ $holiday['start_kw'] }}–{{ $holiday['end_kw'] }}
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($holiday['status'] === 'active')
+                                                <span class="status-pill active">Läuft gerade</span>
+                                            @elseif($holiday['status'] === 'upcoming')
+                                                <span class="status-pill upcoming">In {{ $holiday['days_diff'] }} Tagen</span>
+                                            @else
+                                                <span class="status-pill past">Vorbei</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
             @endif
+        @endforeach
 
-            <h3>Wie lange dauern die Sommerferien in {{ $bundeslandName }}?</h3>
-            <p>Die Sommerferien dauern in der Regel 6 Wochen. Die genauen Termine können von Jahr zu Jahr variieren.</p>
+        <section class="panel" id="faq">
+            <h2 class="panel-header">Häufig gestellte Fragen zu den Schulferien in {{ $stateName }}</h2>
 
-            <h3>Werden Feiertage zu den Schulferien gezählt?</h3>
-            <p>Nein, Feiertage sind gesetzlich festgelegte freie Tage und werden separat von den Schulferien betrachtet,
-                können aber in Ferienzeiten fallen.</p>
+            <div class="faq-list">
+                <div class="faq-card">
+                    <details open>
+                        <summary>Sind heute Ferien {{ $inPrefix }}{{ $stateName }}?</summary>
+                        <div class="faq-content">
+                            @if($isTodayHoliday && $holidayEnd)
+                                <p><strong>Ja</strong>, heute am {{ $holidayService->getNow()->format('d.m.Y') }} sind in {{ $stateName }} Schulferien ({{ $holidayEnd['holiday_name'] }}). Die Ferien dauern noch bis zum {{ $holidayEnd['end_date'] }}.</p>
+                            @else
+                                <p><strong>Nein</strong>, heute am {{ $holidayService->getNow()->format('d.m.Y') }} finden regulär Schultage in {{ $stateName }} statt. Es sind keine Ferien.</p>
+                            @endif
+                        </div>
+                    </details>
+                </div>
+
+                @if($nextHoliday)
+                    <div class="faq-card">
+                        <details open>
+                            <summary>Wann beginnen die nächsten Ferien in {{ $stateName }}?</summary>
+                            <div class="faq-content">
+                                <p>
+                                    Die nächsten Schulferien in {{ $stateName }} sind die <strong>{{ $nextHoliday['holiday_name'] }}</strong>.
+                                    Sie beginnen am <strong>{{ $nextHoliday['start_date'] }}</strong> und enden am <strong>{{ $nextHoliday['end_date'] }}</strong>.
+                                    Es verbleiben noch <strong>{{ $nextHoliday['days'] }} Tage</strong> bis zum Ferienstart.
+                                </p>
+                            </div>
+                        </details>
+                    </div>
+                @endif
+
+                <div class="faq-card">
+                    <details>
+                        <summary>Wer legt die Ferientermine für {{ $stateName }} fest?</summary>
+                        <div class="faq-content">
+                            <p>
+                                Die Schulferientermine werden durch die Kultusministerkonferenz (KMK) der Länder abgestimmt.
+                                Während Sommerferien zwischen den Ländern rollierend koordiniert werden, legen die Landesministerien
+                                Termine für Herbst-, Weihnachts- und Osterferien weitgehend eigenständig fest.
+                            </p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel" id="bundeslaender">
+            <h2 class="panel-header">Ferien-Status in den weiteren Bundesländern</h2>
+            <p style="font-size: 0.95rem; color: #475569; margin-top: 0;">
+                Übersicht der Ferienregelungen in allen weiteren 15 Bundesländern:
+            </p>
+
+            <div class="state-list">
+                @foreach($allStates as $land)
+                    @if($land['slug'] !== $stateSlug)
+                        <a href="{{ route('bundesland', ['bundesland' => $land['slug']]) }}"
+                           class="state-card"
+                           title="Ferien in {{ $land['name'] }} ({{ $land['short'] }})">
+                            <h3>{{ $land['name'] }}</h3>
+                            <p class="status-indicator {{ $holidayService->areTodayHolidays($land['kuerzel']) ? 'yes' : 'no' }}">
+                                {{ $holidayService->areTodayHolidays($land['kuerzel']) ? '● Heute Ferien' : '● Keine Ferien' }}
+                            </p>
+                        </a>
+                    @endif
+                @endforeach
+            </div>
         </section>
     </main>
 </x-layout.primary>
