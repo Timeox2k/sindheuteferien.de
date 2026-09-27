@@ -169,6 +169,94 @@ class HolidayService
         ];
     }
 
+    public function getTodayHolidayRadar(): array
+    {
+        $today = $this->getNow()->startOfDay();
+        $todayFormatted = $today->format('Y-m-d');
+        $allStates = $this->getAllStates();
+
+        $endingToday = [];
+        $startingToday = [];
+        $activeToday = [];
+
+        $currentHolidays = SchoolHoliday::whereDate('start_date', '<=', $todayFormatted)
+            ->whereDate('end_date', '>=', $todayFormatted)
+            ->get();
+
+        foreach ($allStates as $state) {
+            foreach ($currentHolidays as $h) {
+                if ($h->nationwide || $this->matchesBundesland($h->subdivisions, $state['iso'])) {
+                    $endDate = Carbon::parse($h->end_date)->startOfDay();
+                    $startDate = Carbon::parse($h->start_date)->startOfDay();
+
+                    if ($endDate->isSameDay($today)) {
+                        $endingToday[] = [
+                            'state'        => $state,
+                            'holiday_name' => $h->name,
+                            'end_date'     => $endDate->format('d.m.Y'),
+                            'slug'         => $this->generateHolidaySlug($h),
+                        ];
+                    }
+
+                    if ($startDate->isSameDay($today)) {
+                        $startingToday[] = [
+                            'state'        => $state,
+                            'holiday_name' => $h->name,
+                            'start_date'   => $startDate->format('d.m.Y'),
+                            'slug'         => $this->generateHolidaySlug($h),
+                        ];
+                    }
+
+                    $activeToday[] = [
+                        'state'        => $state,
+                        'holiday_name' => $h->name,
+                        'end_date'     => $endDate->format('d.m.Y'),
+                        'days_left'    => (int)$today->diffInDays($endDate),
+                        'slug'         => $this->generateHolidaySlug($h),
+                    ];
+                    break;
+                }
+            }
+        }
+
+        $nextEnding = null;
+        if (empty($endingToday) && !empty($activeToday)) {
+            $nextEnding = collect($activeToday)->sortBy('days_left')->first();
+        }
+
+        $nextStarting = null;
+        if (empty($startingToday)) {
+            $futureHolidays = SchoolHoliday::whereDate('start_date', '>', $todayFormatted)
+                ->orderBy('start_date', 'asc')
+                ->get();
+
+            foreach ($futureHolidays as $fh) {
+                $startDate = Carbon::parse($fh->start_date)->startOfDay();
+                foreach ($allStates as $state) {
+                    if ($fh->nationwide || $this->matchesBundesland($fh->subdivisions, $state['iso'])) {
+                        $nextStarting = [
+                            'state'        => $state,
+                            'holiday_name' => $fh->name,
+                            'start_date'   => $startDate->format('d.m.Y'),
+                            'days_until'   => (int)$today->diffInDays($startDate),
+                            'slug'         => $this->generateHolidaySlug($fh),
+                        ];
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        return [
+            'today'          => $today,
+            'ending_today'   => $endingToday,
+            'starting_today' => $startingToday,
+            'active_today'   => $activeToday,
+            'next_ending'    => $nextEnding,
+            'next_starting'  => $nextStarting,
+        ];
+    }
+
     public function generateHolidaySlug(SchoolHoliday $holiday): string
     {
         $nameSlug = Str::slug($holiday->name);

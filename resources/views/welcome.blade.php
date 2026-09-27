@@ -26,8 +26,70 @@
     </nav>
 
     <main>
+        {{-- Tages-Radar für Ferienbeginn und Ferienende heute --}}
+        <section class="panel" id="tages-radar" style="margin-bottom: 1.5rem;">
+            <h2 class="panel-header" style="margin-bottom: 0.75rem;">
+                Ferienbeginn & Ferienende heute ({{ $holidayService->getNow()->locale('de')->translatedFormat('d. F Y') }})
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 0.75rem;">
+                <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 1rem;">
+                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: #1e3a8a;">In welchen Bundesländern enden heute die Ferien?</h3>
+                    @if(!empty($radar['ending_today']))
+                        <p style="margin: 0; font-weight: 600; color: #059669;">
+                            Heute haben Ferienende:
+                        </p>
+                        <ul style="margin: 0.5rem 0 0; padding-left: 1.25rem;">
+                            @foreach($radar['ending_today'] as $item)
+                                <li>
+                                    <a href="{{ route('bundesland', ['bundesland' => $item['state']['slug']]) }}" class="action-link" style="margin: 0;">
+                                        {{ $item['state']['name'] }} ({{ $item['holiday_name'] }})
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <p style="margin: 0; color: #475569; font-size: 0.95rem;">
+                            Heute enden in <strong>keinem</strong> Bundesland die Schulferien.
+                        </p>
+                        @if($radar['next_ending'])
+                            <p style="margin: 0.5rem 0 0; font-size: 0.85rem; color: #64748b;">
+                                Nächstes Ferienende: <a href="{{ route('bundesland', ['bundesland' => $radar['next_ending']['state']['slug']]) }}">{{ $radar['next_ending']['state']['name'] }}</a> am {{ $radar['next_ending']['end_date'] }} ({{ $radar['next_ending']['holiday_name'] }}).
+                            </p>
+                        @endif
+                    @endif
+                </div>
+
+                <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 1rem;">
+                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: #1e3a8a;">In welchen Bundesländern beginnen heute die Ferien?</h3>
+                    @if(!empty($radar['starting_today']))
+                        <p style="margin: 0; font-weight: 600; color: #059669;">
+                            Heute ist Ferienbeginn in:
+                        </p>
+                        <ul style="margin: 0.5rem 0 0; padding-left: 1.25rem;">
+                            @foreach($radar['starting_today'] as $item)
+                                <li>
+                                    <a href="{{ route('bundesland', ['bundesland' => $item['state']['slug']]) }}" class="action-link" style="margin: 0;">
+                                        {{ $item['state']['name'] }} ({{ $item['holiday_name'] }})
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <p style="margin: 0; color: #475569; font-size: 0.95rem;">
+                            Heute beginnen in <strong>keinem</strong> Bundesland die Schulferien.
+                        </p>
+                        @if($radar['next_starting'])
+                            <p style="margin: 0.5rem 0 0; font-size: 0.85rem; color: #64748b;">
+                                Nächster Ferienbeginn: <a href="{{ route('bundesland', ['bundesland' => $radar['next_starting']['state']['slug']]) }}">{{ $radar['next_starting']['state']['name'] }}</a> am {{ $radar['next_starting']['start_date'] }} (in {{ $radar['next_starting']['days_until'] }} Tagen).
+                            </p>
+                        @endif
+                    @endif
+                </div>
+            </div>
+        </section>
+
         <section class="panel" style="margin-bottom: 1.5rem;">
-            <h2 class="panel-header" style="margin-bottom: 0.5rem;">Schulferien-Status am {{ $holidayService->getNow()->locale('de')->translatedFormat('l, d. F Y') }}</h2>
+            <h2 class="panel-header" style="margin-bottom: 0.5rem;">Übersicht aller 16 Bundesländer</h2>
             <p style="margin: 0; color: #475569; font-size: 0.95rem;">
                 Wähle ein Bundesland aus, um die detaillierten Termine, den aktuellen Countdown und die vollständigen Jahreskalender einzusehen:
             </p>
