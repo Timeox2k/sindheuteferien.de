@@ -20,4 +20,4 @@ Zugegeben, der Code ist an vielen Stellen ziemlich schlampig und einfach herunte
 
 ### Wie finanziert sich der spaß?
 
-Erstmal durch mich, auf meinen Servern von [BoxSRV.net](https://BoxSRV.net) - später ggf. mit Adsense Einblendungen.
+Erstmal durch mich, auf meinen Servern von [BoxSRV.net](https://metzler-webseiten.de) - später ggf. mit Adsense Einblendungen.
