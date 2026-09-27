@@ -27,7 +27,7 @@
 
     <main>
         <section class="panel" style="margin-bottom: 1.5rem;">
-            <h2 class="panel-header" style="margin-bottom: 0.5rem;">Schulferien-Status am {{ $holidayService->getNow()->translatedFormat('l, d. F Y') }}</h2>
+            <h2 class="panel-header" style="margin-bottom: 0.5rem;">Schulferien-Status am {{ $holidayService->getNow()->locale('de')->translatedFormat('l, d. F Y') }}</h2>
             <p style="margin: 0; color: #475569; font-size: 0.95rem;">
                 Wähle ein Bundesland aus, um die detaillierten Termine, den aktuellen Countdown und die vollständigen Jahreskalender einzusehen:
             </p>
