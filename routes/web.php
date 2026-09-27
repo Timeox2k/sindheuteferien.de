@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', HomeController::class)->name("home");
 Route::get('/impressum', ImpressumController::class)->name('impressum');
 Route::get('/datenschutz', DatenschutzController::class)->name('datenschutz');
-Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/sitemap-{section}.xml', [SitemapController::class, 'section'])->where('section', '[a-z0-9]+')->name('sitemap.section');
 Route::get('/robots.txt', RobotsController::class)->name('robots');
 Route::redirect('/github', 'https://github.com/Timeox2k/sindheuteferien.de')->name('github');
 

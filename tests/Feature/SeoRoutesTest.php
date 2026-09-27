@@ -56,15 +56,26 @@ class SeoRoutesTest extends TestCase
         $response->assertSee('FAQPage', false);
     }
 
-    public function test_sitemap_xml_returns_valid_xml_with_urls(): void
+    public function test_sitemap_index_and_year_sections(): void
     {
         $response = $this->get('/sitemap.xml');
-
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/xml; charset=utf-8');
-        $response->assertSee('<urlset', false);
-        $response->assertSee('/nordrhein-westfalen', false);
-        $response->assertSee('/bayern', false);
+        $response->assertSee('<sitemapindex', false);
+        $response->assertSee('/sitemap-main.xml', false);
+        $response->assertSee('/sitemap-2026.xml', false);
+
+        $mainResponse = $this->get('/sitemap-main.xml');
+        $mainResponse->assertStatus(200);
+        $mainResponse->assertHeader('Content-Type', 'application/xml; charset=utf-8');
+        $mainResponse->assertSee('<urlset', false);
+        $mainResponse->assertSee('/nordrhein-westfalen', false);
+        $mainResponse->assertSee('/bayern', false);
+
+        $yearResponse = $this->get('/sitemap-2026.xml');
+        $yearResponse->assertStatus(200);
+        $yearResponse->assertHeader('Content-Type', 'application/xml; charset=utf-8');
+        $yearResponse->assertSee('<urlset', false);
     }
 
     public function test_robots_txt_returns_text_with_sitemap_link(): void

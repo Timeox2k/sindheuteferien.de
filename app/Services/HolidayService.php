@@ -297,6 +297,37 @@ class HolidayService
         ];
     }
 
+    public function getAvailableYears(): array
+    {
+        return SchoolHoliday::selectRaw('strftime("%Y", start_date) as year')
+            ->distinct()
+            ->orderBy('year', 'asc')
+            ->pluck('year')
+            ->map(fn($y) => (int)$y)
+            ->filter(fn($y) => $y > 0)
+            ->values()
+            ->toArray();
+    }
+
+    public function getHolidaySlugsForYear(int $year): array
+    {
+        $urls = [];
+        $states = $this->getAllStates();
+
+        foreach ($states as $state) {
+            $holidays = $this->getHolidaysForBundesland($state['kuerzel'], $year);
+            foreach ($holidays as $holiday) {
+                $urls[] = [
+                    'state_slug'   => $state['slug'],
+                    'holiday_slug' => $holiday['slug'],
+                    'year'         => $holiday['year'],
+                ];
+            }
+        }
+
+        return $urls;
+    }
+
     public function getAllHolidaySlugsForSitemap(): array
     {
         $urls = [];
