@@ -127,12 +127,26 @@
 
         <section class="panel" style="margin-top: 2rem;">
             <h2 class="panel-header">Offizielle Schulferien in Deutschland – Termine & Regelungen</h2>
-            <p style="font-size: 0.95rem; color: #334155; line-height: 1.6;">
-                Die Termine für die Schulferien in den 16 Bundesländern werden von der Kultusministerkonferenz (KMK) koordiniert.
-                Gemäß dem Hamburger Abkommen beträgt die Gesamtdauer der Ferien innerhalb eines Schuljahres 75 Werktage (einschließlich 12 Samstage).
-                Während die Sommerferien zwischen den Ländern gestaffelt festgelegt werden, bestimmen die Länder die Termine für Herbst-,
-                Weihnachts-, Winter-, Oster- und Pfingstferien eigenständig.
-            </p>
+            <div style="font-size: 0.95rem; color: #334155; line-height: 1.6;">
+                <p style="margin: 0.5rem 0;">
+                    Die Ferienordnung in der Bundesrepublik Deutschland basiert auf Beschlüssen der Ständigen Konferenz der Kultusminister der Länder (Kultusministerkonferenz / KMK). Gemäß dem sogenannten Hamburger Abkommen stehen jedem Schüler pro Schuljahr insgesamt <strong>75 Werktage Ferien</strong> zu (einschließlich 12 Samstage).
+                </p>
+
+                <h3 style="font-size: 1rem; color: #0f172a; margin: 1rem 0 0.25rem;">Das rollierende System der Sommerferien</h3>
+                <p style="margin: 0.25rem 0;">
+                    Um ein bundesweites Verkehrschaos auf den Autobahnen zu vermeiden und die touristische Infrastruktur gleichmäßig auszulasten, beginnen die Sommerferien in Deutschland nicht gleichzeitig. Die 16 Bundesländer sind in fünf Ländergruppen aufgeteilt, deren Ferienbeginn im Sommer von Jahr zu Jahr rolliert. Ausnahmen bilden Bayern und Baden-Württemberg, die aufgrund traditioneller Pfingstferien und landwirtschaftlicher Wurzeln stets als letzte Länder in die Sommerferien starten.
+                </p>
+
+                <h3 style="font-size: 1rem; color: #0f172a; margin: 1rem 0 0.25rem;">Eigenverantwortung bei Herbst-, Winter- und Osterferien</h3>
+                <p style="margin: 0.25rem 0;">
+                    Während die Sommerferien zentral über mehrere Jahre im Voraus durch die KMK vereinbart werden, legen die einzelnen Bundesländer ihre Termine für die Herbst-, Weihnachts-, Winter- und Osterferien in eigener Zuständigkeit fest. Dadurch variieren beispielsweise die Winterferien oder Pfingstferien je nach Bundesland zwischen wenigen Tagen und zwei Wochen.
+                </p>
+
+                <h3 style="font-size: 1rem; color: #0f172a; margin: 1rem 0 0.25rem;">Bewegliche Ferientage</h3>
+                <p style="margin: 0.25rem 0;">
+                    Zusätzlich zu den festen Schulferien stehen den Schulen in vielen Bundesländern sogenannte bewegliche Ferientage zur Verfügung. Diese werden von den Schulkonferenzen oder Schulämtern vor Ort beschlossen, um lokale Brauchtumstage (wie Karneval / Fastnacht) oder Brückentage nach Feiertagen unterrichtsfrei zu gestalten.
+                </p>
+            </div>
         </section>
 
         <section class="panel">

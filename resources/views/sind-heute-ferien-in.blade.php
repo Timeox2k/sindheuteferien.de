@@ -177,6 +177,18 @@
             </div>
         </section>
 
+        <section class="panel" id="ferienordnung">
+            <h2 class="panel-header">Wissenswertes zur Ferienordnung in {{ $stateName }}</h2>
+            <div style="font-size: 0.95rem; color: #334155; line-height: 1.6;">
+                <p style="margin: 0.5rem 0;">
+                    In {{ $stateName }} richtet sich die Ferienplanung nach den Vorgaben des zuständigen Landesministeriums für Kultus und Bildung in Abstimmung mit der Kultusministerkonferenz (KMK). Über das gesamte Schuljahr verteilt stehen den Schülerinnen und Schülern gemäß Hamburger Abkommen insgesamt 75 Werktage Ferien zu.
+                </p>
+                <p style="margin: 0.5rem 0;">
+                    <strong>Gesetzliche Schulpflicht & Reiseplanung:</strong> Bitte beachten Sie, dass die gesetzliche Schulpflicht auch am letzten Schultag vor den Ferien und am ersten Schultag nach den Ferien uneingeschränkt gilt. Eine Beurlaubung unmittelbar vor oder nach den Ferienzeiten ist in {{ $stateName }} nur in nachweisbaren, begründeten Ausnahmefällen auf schriftlichen Antrag bei der Schulleitung möglich. Gesetzliche Feiertage, die in den Ferienzeitraum fallen, sind in der ausgewiesenen Gesamtdauer bereits berücksichtigt.
+                </p>
+            </div>
+        </section>
+
         <section class="panel" id="bundeslaender">
             <h2 class="panel-header">Ferien-Status in den weiteren Bundesländern</h2>
             <p style="font-size: 0.95rem; color: #475569; margin-top: 0;">
