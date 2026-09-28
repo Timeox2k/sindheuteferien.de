@@ -36,7 +36,15 @@ class StateController extends Controller
         $isTodayHoliday = $holidayService->areTodayHolidays($state['kuerzel']);
         $nextHoliday = $holidayService->getDaysToNextHolidays($state['kuerzel']);
         $holidayEnd = $holidayService->holidaysEndInDays($state['kuerzel']);
-        $groupedHolidays = $holidayService->getHolidaysGroupedByYear($state['kuerzel'], [2025, 2026, 2027]);
+        $availableYears = $holidayService->getAvailableYears();
+        $groupedHolidays = $holidayService->getHolidaysGroupedByYear($state['kuerzel'], $availableYears);
+
+        $displayYears = collect([$currentYear, $currentYear + 1, $currentYear - 1])
+            ->merge($availableYears)
+            ->unique()
+            ->filter(fn($y) => isset($groupedHolidays[$y]) && $groupedHolidays[$y]->isNotEmpty())
+            ->values()
+            ->toArray();
 
         $title = "Ferien {$stateName} ({$stateShort}) {$currentYear}: Sind heute Ferien? Termine & Kalender";
         
@@ -114,6 +122,7 @@ class StateController extends Controller
             'holidayEnd'      => $holidayEnd,
             'nextHoliday'     => $nextHoliday,
             'groupedHolidays' => $groupedHolidays,
+            'displayYears'    => $displayYears,
             'allStates'       => $holidayService->getAllStates(),
             'currentYear'     => $currentYear,
         ]);

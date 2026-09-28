@@ -76,7 +76,7 @@
             </div>
         </section>
 
-        @foreach([$currentYear, $currentYear + 1, $currentYear - 1] as $year)
+        @foreach($displayYears ?? [$currentYear, $currentYear + 1, $currentYear - 1] as $year)
             @if(isset($groupedHolidays[$year]) && $groupedHolidays[$year]->isNotEmpty())
                 <section class="panel" id="ferien-{{ $year }}">
                     <h2 class="panel-header">Schulferien {{ $year }} in {{ $stateName }} ({{ $stateShort }})</h2>
