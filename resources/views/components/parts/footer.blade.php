@@ -1,10 +1,10 @@
 <footer {{ $attributes->class('') }}>
     <span>
-        &copy; 2025 SindHeuteFerien.de – Alle Angaben ohne Gewähr.
+        &copy; {{ date('Y') }} SindHeuteFerien.de – Alle Angaben ohne Gewähr.
     </span>
     <span>
         Datenquelle:
-        <a href="https://www.schulferien.org" target="_blank" rel="noopener noreferrer">schulferien.org</a>
+        <a href="https://www.kmk.org" target="_blank" rel="noopener noreferrer">Kultusministerkonferenz (KMK)</a>
     </span>
     <nav>
         <a href="{{ route('impressum') }}">Impressum</a>

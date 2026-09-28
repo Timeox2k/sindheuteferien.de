@@ -87,4 +87,34 @@ class SeoRoutesTest extends TestCase
         $response->assertSee('User-agent: *', false);
         $response->assertSee('Sitemap:', false);
     }
+
+    public function test_impressum_loads_with_legal_information(): void
+    {
+        $response = $this->get('/impressum');
+
+        $response->assertStatus(200);
+        $response->assertSee('Impressum', false);
+        $response->assertSee('Angaben gemäß § 5 DDG', false);
+        $response->assertSee('Tiziano Santo Metzler', false);
+    }
+
+    public function test_datenschutz_loads_with_adsense_and_gdpr_clauses(): void
+    {
+        $response = $this->get('/datenschutz');
+
+        $response->assertStatus(200);
+        $response->assertSee('Datenschutzerklärung', false);
+        $response->assertSee('Google AdSense', false);
+        $response->assertSee('adssettings.google.com', false);
+        $response->assertSee('Cloudflare', false);
+    }
+
+    public function test_adsense_script_renders_when_client_id_configured(): void
+    {
+        config(['services.adsense.client_id' => 'ca-pub-1234567890']);
+
+        $response = $this->get('/');
+        $response->assertStatus(200);
+        $response->assertSee('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890', false);
+    }
 }

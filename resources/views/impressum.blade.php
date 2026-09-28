@@ -1,48 +1,67 @@
 <x-layout.primary>
     <x-slot:header>
         <h1>Impressum</h1>
-        <p>Hier findest du die rechtlichen Informationen zu SindHeuteFerien.de</p>
+        <p>Rechtliche Informationen und gesetzliche Anbieterkennzeichnung gemäß § 5 Digitale-Dienste-Gesetz (DDG).</p>
     </x-slot:header>
-    <section class="strong-services-wrapper section-padding fw500" id="impressum">
-        <div class="container">
-            <h1>Impressum</h1>
-            <h2>
-                Gesetzliche Anbieterkennung
-            </h2>
-            <p>Tiziano Santo Metzler<br/> Bautzener Allee 59<br/> 02977 Hoyerswerda <br>Deutschland</p>
-            <h2>Contact</h2>
-            <p>Telefon: +49 1590 1084284<br/>
-                E-Mail: hoy-metzler-it@fn.de</p>
-            <h2>Haftung für Inhalte</h2>
-            <p>Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den
-                allgemeinen
-                Gesetzen
-                verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet,
-                übermittelte
-                oder
-                gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine
-                rechtswidrige
-                Tätigkeit hinweisen.</p>
-            <p>Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen
-                bleiben
-                hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer
-                konkreten
-                Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese
-                Inhalte
-                umgehend
-                entfernen.</p>
-            <h2>Haftung für Links</h2>
-            <p>Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben.
-                Deshalb
-                können wir für diese fremden Inhalte auch keine Gewähr übernehmen.
-                Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten
-                verantwortlich.
-                Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft.
-                Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar.
-                Eine permanente inhaltliche Kontrolle der
-                der verlinkten Seiten ist ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar.
-                Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.
-            </p>
-        </div>
-    </section>
+
+    <main>
+        <section class="panel" id="impressum-anbieter">
+            <h2 class="panel-header">Angaben gemäß § 5 DDG</h2>
+            <div style="font-size: 0.95rem; color: #334155; line-height: 1.6;">
+                <p style="margin: 0.5rem 0;">
+                    <strong>Tiziano Santo Metzler</strong><br/>
+                    Bautzener Allee 59<br/>
+                    02977 Hoyerswerda<br/>
+                    Deutschland
+                </p>
+
+                <h3 style="font-size: 1rem; color: #0f172a; margin-top: 1.25rem; margin-bottom: 0.25rem;">Kontakt</h3>
+                <p style="margin: 0.25rem 0;">
+                    Telefon: +49 1590 1084284<br/>
+                    E-Mail: <a href="mailto:hoy-metzler-it@fn.de" style="color: #1d4ed8; text-decoration: none;">hoy-metzler-it@fn.de</a>
+                </p>
+
+                <h3 style="font-size: 1rem; color: #0f172a; margin-top: 1.25rem; margin-bottom: 0.25rem;">Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
+                <p style="margin: 0.25rem 0;">
+                    Tiziano Santo Metzler<br/>
+                    Bautzener Allee 59<br/>
+                    02977 Hoyerswerda
+                </p>
+            </div>
+        </section>
+
+        <section class="panel" id="streitbeilegung" style="margin-top: 1.5rem;">
+            <h2 class="panel-header">EU-Streitschlichtung & Verbraucherstreitbeilegung</h2>
+            <div style="font-size: 0.925rem; color: #334155; line-height: 1.6;">
+                <p style="margin: 0.5rem 0;">
+                    Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:
+                    <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer" style="color: #1d4ed8;">https://ec.europa.eu/consumers/odr/</a>.<br/>
+                    Unsere E-Mail-Adresse finden Sie oben im Impressum.
+                </p>
+                <p style="margin: 0.5rem 0;">
+                    Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.
+                </p>
+            </div>
+        </section>
+
+        <section class="panel" id="haftungshinweise" style="margin-top: 1.5rem;">
+            <h2 class="panel-header">Haftung für Inhalte & Links</h2>
+            <div style="font-size: 0.925rem; color: #334155; line-height: 1.6;">
+                <h3 style="font-size: 0.95rem; color: #0f172a; margin: 0.75rem 0 0.25rem;">Haftung für Inhalte</h3>
+                <p style="margin: 0.25rem 0;">
+                    Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 DDG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt.
+                </p>
+
+                <h3 style="font-size: 0.95rem; color: #0f172a; margin: 1rem 0 0.25rem;">Haftung für Links</h3>
+                <p style="margin: 0.25rem 0;">
+                    Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.
+                </p>
+
+                <h3 style="font-size: 0.95rem; color: #0f172a; margin: 1rem 0 0.25rem;">Urheberrecht</h3>
+                <p style="margin: 0.25rem 0;">
+                    Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.
+                </p>
+            </div>
+        </section>
+    </main>
 </x-layout.primary>
