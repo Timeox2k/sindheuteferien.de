@@ -1,0 +1,39 @@
+{
+  "name": "Sind heute Ferien? – Schulferien Deutschland",
+  "short_name": "SindHeuteFerien",
+  "description": "Tagesaktueller Status, nächste Ferientermine und Schulferien-Kalender für alle 16 deutschen Bundesländer.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#1e3a8a",
+  "theme_color": "#1e3a8a",
+  "lang": "de-DE",
+  "categories": ["education", "news", "utilities"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

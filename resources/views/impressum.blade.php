@@ -9,7 +9,8 @@
             <h2 class="panel-header">Angaben gemäß § 5 DDG</h2>
             <div style="font-size: 0.95rem; color: #334155; line-height: 1.6;">
                 <p style="margin: 0.5rem 0;">
-                    <strong>Tiziano Santo Metzler</strong><br/>
+                    <strong>Hoy-Metzler IT</strong><br/>
+                    Inhaber: Tiziano Santo Metzler<br/>
                     Bautzener Allee 59<br/>
                     02977 Hoyerswerda<br/>
                     Deutschland
@@ -19,6 +20,11 @@
                 <p style="margin: 0.25rem 0;">
                     Telefon: +49 1590 1084284<br/>
                     E-Mail: <a href="mailto:hoy-metzler-it@fn.de" style="color: #1d4ed8; text-decoration: none;">hoy-metzler-it@fn.de</a>
+                </p>
+
+                <h3 style="font-size: 1rem; color: #0f172a; margin-top: 1.25rem; margin-bottom: 0.25rem;">Umsatzsteuer</h3>
+                <p style="margin: 0.25rem 0;">
+                    Gemäß § 19 UStG wird keine Umsatzsteuer berechnet und ausgewiesen (Kleinunternehmerstatus).
                 </p>
 
                 <h3 style="font-size: 1rem; color: #0f172a; margin-top: 1.25rem; margin-bottom: 0.25rem;">Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>

@@ -15,15 +15,6 @@
         <p>Tagesaktueller Status, nächste Ferientermine und Schulferien {{ $currentYear }} / {{ $currentYear + 1 }} für alle 16 deutschen Bundesländer.</p>
     </x-slot:header>
 
-    <nav class="navbar" aria-label="Schnellnavigation Bundesländer">
-        <ul>
-            @foreach($states as $state)
-                <li>
-                    <a href="{{ route('bundesland', ['bundesland' => $state['slug']]) }}" title="Ferien in {{ $state['name'] }}">{{ $state['short'] }}</a>
-                </li>
-            @endforeach
-        </ul>
-    </nav>
 
     <main>
         {{-- Tages-Radar für Ferienbeginn und Ferienende heute --}}
@@ -88,7 +79,7 @@
             </div>
         </section>
 
-        <section class="panel" style="margin-bottom: 1.5rem;">
+        <section class="panel" id="bundeslaender" style="margin-bottom: 1.5rem;">
             <h2 class="panel-header" style="margin-bottom: 0.5rem;">Übersicht aller 16 Bundesländer</h2>
             <p style="margin: 0; color: #475569; font-size: 0.95rem;">
                 Wähle ein Bundesland aus, um die detaillierten Termine, den aktuellen Countdown und die vollständigen Jahreskalender einzusehen:

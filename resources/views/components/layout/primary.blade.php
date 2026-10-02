@@ -37,6 +37,11 @@
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png"/>
     <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+    <link rel="manifest" href="/manifest.webmanifest"/>
+    <meta name="theme-color" content="#1e3a8a"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="SindHeuteFerien"/>
 
     <title>
         @if(Page::hasTitle())
@@ -63,22 +68,34 @@
 <body>
 @if(isset($header))
     <header>
-        @if(!Request::is("/"))
-            <div class="top-bar">
-                <a href="{{ route('home') }}" class="hidden-md-block">
+        <div class="top-bar">
+            <a href="{{ route('home') }}" class="site-brand" aria-label="SindHeuteFerien.de – Startseite">
+                <img src="/favicon.svg" alt="" width="26" height="26" class="site-logo"/>
+                <span class="brand-text">SindHeuteFerien<span class="brand-tld">.de</span></span>
+            </a>
+            @if(!Request::is("/"))
+                <a href="{{ route('home') }}" class="top-bar-back hidden-md-block">
                     ← Übersicht aller Bundesländer
                 </a>
-                <a href="{{ route('home') }}" class="block-md-none">
+                <a href="{{ route('home') }}" class="top-bar-back block-md-none">
                     ← Übersicht
                 </a>
-            </div>
-        @endif
+            @endif
+        </div>
         <div class="header-container">
             {!! $header !!}
         </div>
     </header>
 @endif
+<x-parts.navbar/>
 {!! $slot !!}
 <x-parts.footer/>
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+    }
+</script>
 </body>
 </html>

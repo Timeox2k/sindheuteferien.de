@@ -47,16 +47,7 @@ class StateController extends Controller
             ->toArray();
 
         $title = "Ferien {$stateName} ({$stateShort}) {$currentYear}: Sind heute Ferien? Termine & Kalender";
-        
-        if ($isTodayHoliday && $holidayEnd) {
-            $descStatus = "Ja, heute sind {$holidayEnd['holiday_name']} {$inPrefix}{$stateName} (bis {$holidayEnd['end_date']}).";
-        } elseif ($nextHoliday) {
-            $descStatus = "Nein, heute sind keine Ferien {$inPrefix}{$stateName}. Nächste Ferien: {$nextHoliday['holiday_name']} ab {$nextHoliday['start_date']} (in {$nextHoliday['days']} Tagen).";
-        } else {
-            $descStatus = "Aktuelle Schulferien und Ferientermine {$inPrefix}{$stateName}.";
-        }
-
-        $description = "{$descStatus} Alle Schulferien {$currentYear} & {$nextYear} für {$stateName} ({$stateShort}) mit Terminen, Kalenderwochen und Countdown im Überblick.";
+        $description = "Sind heute Ferien {$inPrefix}{$stateName}? Aktueller Ferienstatus, Live-Countdown bis zu den nächsten Ferien sowie alle Ferientermine {$currentYear} & {$nextYear} für {$stateName} ({$stateShort}) jetzt prüfen.";
 
         Page::setTitle($title);
         Page::setDescription($description);

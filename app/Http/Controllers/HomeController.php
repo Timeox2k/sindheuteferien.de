@@ -15,7 +15,7 @@ class HomeController
         $radar = $holidayService->getTodayHolidayRadar();
 
         Page::setTitle("Sind heute Ferien? Schulferien & Ferientermine {$currentYear} / {$nextYear}");
-        Page::setDescription("Sind heute Ferien in Deutschland? Finde sofort heraus, in welchen Bundesländern heute schulfrei ist, wann Ferienbeginn oder Ferienende ist und alle Schulferien {$currentYear} im Überblick.");
+        Page::setDescription("Sind heute Ferien in Deutschland? Jetzt sofort prüfen, in welchen Bundesländern heute schulfrei ist, wann die nächsten Ferien starten & alle Termine {$currentYear} / {$nextYear}.");
         Page::setCanonical(route('home'));
         Page::setKeywords("Sind heute Ferien, Schulferien heute, ferienbeginn heute welche bundesländer, in welchen bundesländern enden heute die ferien, ferienende heute welches bundesland, wann sind wieder ferien, Ferienkalender {$currentYear}");
 

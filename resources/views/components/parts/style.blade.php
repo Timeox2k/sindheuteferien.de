@@ -25,17 +25,48 @@
         margin: 0 auto;
         padding: 0.6rem 1.25rem;
         border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
     }
 
-    header .top-bar a {
+    header .site-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.05rem;
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+    }
+
+    header .site-brand:hover {
+        color: #dbeafe;
+    }
+
+    header .site-brand .site-logo {
+        border-radius: 5px;
+        display: block;
+        flex-shrink: 0;
+    }
+
+    header .brand-tld {
+        color: #93c5fd;
+    }
+
+    header .top-bar-back {
         color: #dbeafe;
         text-decoration: none;
         font-size: 0.875rem;
         font-weight: 500;
         display: inline-block;
+        white-space: nowrap;
     }
 
-    header .top-bar a:hover {
+    header .top-bar-back:hover {
         color: #ffffff;
         text-decoration: underline;
     }
@@ -63,7 +94,7 @@
         max-width: 800px;
     }
 
-    /* Sub-Navigation */
+    /* Sub-Navigation (Alte Bundesländer-Reihe) */
     .navbar {
         background-color: #0f172a;
         border-bottom: 1px solid #1e293b;
@@ -88,11 +119,17 @@
         font-weight: 600;
         padding: 0.2rem 0.4rem;
         border-radius: 3px;
+        transition: color 0.15s ease, background-color 0.15s ease;
     }
 
     .navbar a:hover {
         color: #ffffff;
         background-color: #1e293b;
+    }
+
+    .navbar a.active {
+        color: #ffffff;
+        background-color: #2563eb;
     }
 
     /* Main Container */
@@ -535,6 +572,36 @@
             font-size: 0.95rem;
         }
 
+        header .top-bar {
+            padding: 0.5rem 1rem;
+        }
+
+        header .site-brand {
+            font-size: 0.95rem;
+        }
+
+        header .site-brand .site-logo {
+            width: 22px;
+            height: 22px;
+        }
+
+        header .top-bar-back {
+            font-size: 0.8rem;
+        }
+
+        .navbar {
+            padding: 0.4rem 0.5rem;
+        }
+
+        .navbar ul {
+            gap: 0.35rem 0.5rem;
+        }
+
+        .navbar a {
+            font-size: 0.75rem;
+            padding: 0.15rem 0.35rem;
+        }
+
         .status-banner {
             flex-direction: column;
             align-items: flex-start;
@@ -686,5 +753,17 @@
         .block-md-none {
             display: none !important;
         }
+    }
+
+    .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
     }
 </style>

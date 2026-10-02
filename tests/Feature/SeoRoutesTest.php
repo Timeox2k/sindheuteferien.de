@@ -117,4 +117,39 @@ class SeoRoutesTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890', false);
     }
+
+    public function test_navigation_bar_renders_across_all_pages(): void
+    {
+        $responseHome = $this->get('/');
+        $responseHome->assertStatus(200);
+        $responseHome->assertSee('SindHeuteFerien', false);
+        $responseHome->assertSee('favicon.svg', false);
+        $responseHome->assertSee('title="Ferien in Bayern"', false);
+
+        $responseState = $this->get('/bayern');
+        $responseState->assertStatus(200);
+        $responseState->assertSee('SindHeuteFerien', false);
+        $responseState->assertSee('class="active"', false);
+        $responseState->assertSee('Übersicht', false);
+
+        $responseLegal = $this->get('/impressum');
+        $responseLegal->assertStatus(200);
+        $responseLegal->assertSee('SindHeuteFerien', false);
+        $responseLegal->assertSee('favicon.svg', false);
+    }
+
+    public function test_pwa_manifest_and_service_worker_configured(): void
+    {
+        $response = $this->get('/');
+        $response->assertStatus(200);
+        $response->assertSee('rel="manifest"', false);
+        $response->assertSee('/manifest.webmanifest', false);
+        $response->assertSee('/sw.js', false);
+        $response->assertSee('name="theme-color"', false);
+
+        $this->assertFileExists(public_path('manifest.webmanifest'));
+        $this->assertFileExists(public_path('sw.js'));
+        $this->assertFileExists(public_path('icon-192.png'));
+        $this->assertFileExists(public_path('icon-512.png'));
+    }
 }

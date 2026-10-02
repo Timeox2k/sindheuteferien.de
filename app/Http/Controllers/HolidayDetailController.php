@@ -42,15 +42,7 @@ class HolidayDetailController extends Controller
             ? "KW {$holiday['start_kw']}"
             : "KW {$holiday['start_kw']}–{$holiday['end_kw']}";
 
-        if ($today->between($startDate, $endDate)) {
-            $statusSentence = "Aktuell laufen die {$holidayName} {$inPrefix}{$stateName} noch bis zum {$holiday['end_date']}!";
-        } elseif ($daysUntilStart > 0) {
-            $statusSentence = "Die {$holidayName} {$holidayYear} {$inPrefix}{$stateName} beginnen in {$daysUntilStart} Tagen ({$holiday['start_date']}).";
-        } else {
-            $statusSentence = "Die {$holidayName} {$holidayYear} {$inPrefix}{$stateName} sind bereits vergangen.";
-        }
-
-        $description = "Wann sind {$holidayName} in {$stateShort} ({$stateName}) {$holidayYear}? Zeitraum: {$dateRangeStr} ({$holiday['duration']} Tage, {$kwStr}). {$statusSentence}";
+        $description = "Wann beginnen die {$holidayName} {$holidayYear} {$inPrefix}{$stateName} ({$stateShort})? Alle genauen Ferientermine, Reisedauer, Kalenderwochen und Live-Countdown jetzt ansehen.";
 
         Page::setTitle($title);
         Page::setDescription($description);
