@@ -15,6 +15,7 @@ class SeoRoutesTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('<title>', false);
         $response->assertSee('Sind heute Ferien?', false);
+        $response->assertSee('Welches Bundesland hat heute Ferien?', false);
         $response->assertSee('rel="canonical"', false);
         $response->assertSee('FAQPage', false);
     }
@@ -52,6 +53,7 @@ class SeoRoutesTest extends TestCase
         $response->assertSee('Herbstferien NRW 2026 (Nordrhein-Westfalen)', false);
         $response->assertSee('17.10.2026', false);
         $response->assertSee('31.10.2026', false);
+        $response->assertSee('Nächste Schulferien', false);
         $response->assertSee('BreadcrumbList', false);
         $response->assertSee('FAQPage', false);
     }

@@ -17,11 +17,18 @@ class HomeController
         Page::setTitle("Sind heute Ferien? Schulferien & Ferientermine {$currentYear} / {$nextYear}");
         Page::setDescription("Sind heute Ferien in Deutschland? Jetzt sofort prüfen, in welchen Bundesländern heute schulfrei ist, wann die nächsten Ferien starten & alle Termine {$currentYear} / {$nextYear}.");
         Page::setCanonical(route('home'));
-        Page::setKeywords("Sind heute Ferien, Schulferien heute, ferienbeginn heute welche bundesländer, in welchen bundesländern enden heute die ferien, ferienende heute welches bundesland, wann sind wieder ferien, Ferienkalender {$currentYear}");
+        Page::setKeywords("Sind heute Ferien, Schulferien heute, welches bundesland hat heute ferien, in welchem bundesland sind aktuell ferien, ferienbeginn heute welche bundesländer, in welchen bundesländern enden heute die ferien, ferienende heute welches bundesland, wann sind wieder ferien, Ferienkalender {$currentYear}");
 
         Page::addBreadcrumb('Startseite', route('home'));
 
         $todayFormatted = $now->locale('de')->translatedFormat('d. F Y');
+
+        if (!empty($radar['active_today'])) {
+            $activeList = collect($radar['active_today'])->map(fn($a) => "{$a['state']['name']} ({$a['holiday_name']})")->implode(', ');
+            $activeAnswer = "Heute (am {$todayFormatted}) haben Schüler in folgenden Bundesländern Ferien: {$activeList}.";
+        } else {
+            $activeAnswer = "Am heutigen Tag ({$todayFormatted}) sind in keinem deutschen Bundesland Schulferien (regulärer Schultag).";
+        }
 
         if (!empty($radar['ending_today'])) {
             $endingList = collect($radar['ending_today'])->map(fn($e) => "{$e['state']['name']} ({$e['holiday_name']})")->implode(', ');
@@ -45,6 +52,22 @@ class HomeController
             '@context'   => 'https://schema.org',
             '@type'      => 'FAQPage',
             'mainEntity' => [
+                [
+                    '@type' => 'Question',
+                    'name'  => 'Welches Bundesland hat heute Ferien?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text'  => $activeAnswer,
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name'  => 'In welchem Bundesland sind aktuell Ferien?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text'  => $activeAnswer,
+                    ],
+                ],
                 [
                     '@type' => 'Question',
                     'name'  => 'In welchen Bundesländern enden heute die Ferien?',

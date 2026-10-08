@@ -63,6 +63,28 @@
             </div>
         </section>
 
+        @if($nextHoliday)
+            <div class="panel" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #ffffff; border: none; margin-bottom: 1.5rem; padding: 1.25rem 1.5rem; border-radius: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <span style="display: inline-block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(255,255,255,0.15); color: #93c5fd; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700;">
+                            Nächste Schulferien {{ $inPrefix }}{{ $stateName }}
+                        </span>
+                        <h3 style="margin: 0.4rem 0 0.2rem; font-size: 1.25rem; color: #ffffff;">
+                            {{ $nextHoliday['name'] }} {{ $nextHoliday['year'] }}
+                        </h3>
+                        <p style="margin: 0; font-size: 0.9rem; color: #cbd5e1;">
+                            Zeitraum: {{ $nextHoliday['start_date'] }} bis {{ $nextHoliday['end_date'] }} ({{ $nextHoliday['duration'] }} Tage)
+                        </p>
+                    </div>
+                    <a href="{{ route('holiday.detail', ['bundesland' => $stateSlug, 'ferien' => $nextHoliday['slug']]) }}" 
+                       style="background: #ffffff; color: #1e3a8a; font-weight: 700; padding: 0.65rem 1.25rem; border-radius: 6px; text-decoration: none; font-size: 0.95rem; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.4rem; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+                        Termine ansehen →
+                    </a>
+                </div>
+            </div>
+        @endif
+
         @if($otherYears->isNotEmpty())
             <section class="panel" id="jahresvergleich">
                 <h2 class="panel-header">{{ $holidayName }} in {{ $stateName }} im Mehrjahresvergleich</h2>

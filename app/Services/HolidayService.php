@@ -373,6 +373,16 @@ class HolidayService
             }
         }
 
+        $nextHolidayInState = $allHolidays->first(function ($h) use ($startDate) {
+            $hStart = Carbon::createFromFormat('d.m.Y', $h['start_date'])->startOfDay();
+            return $hStart->gt($startDate);
+        });
+
+        $prevHolidayInState = $allHolidays->filter(function ($h) use ($startDate) {
+            $hStart = Carbon::createFromFormat('d.m.Y', $h['start_date'])->startOfDay();
+            return $hStart->lt($startDate);
+        })->last();
+
         return [
             'state'             => $state,
             'holiday'           => $match,
@@ -380,6 +390,8 @@ class HolidayService
             'end_carbon'        => $endDate,
             'days_until_start'  => (int)$today->diffInDays($startDate, false),
             'days_until_end'    => (int)$today->diffInDays($endDate, false),
+            'next_holiday'      => $nextHolidayInState,
+            'prev_holiday'      => $prevHolidayInState,
             'other_years'       => $allYearsSameHoliday,
             'other_states'      => $otherStatesComparison,
         ];

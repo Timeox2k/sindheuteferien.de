@@ -102,6 +102,8 @@ class HolidayDetailController extends Controller
             'daysUntilEnd'    => $daysUntilEnd,
             'otherYears'      => $detail['other_years'],
             'otherStates'     => $detail['other_states'],
+            'nextHoliday'     => $detail['next_holiday'],
+            'prevHoliday'     => $detail['prev_holiday'],
         ]);
     }
 }
