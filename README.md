@@ -9,4 +9,4 @@ Das Projekt hat zwei Missionen: Für mich soll es ein Spielplatz sein, um mit SE
 
 ### Wie finanziert sich der spaß?
 
-Erstmal durch mich, auf meinen Servern von [BoxSRV.net](https://metzler-webseiten.de) - später ggf. mit Adsense Einblendungen.
+Erstmal durch mich, auf meinen Servern von [metzler-webseiten.de](https://metzler-webseiten.de) und mit Adsense Einblendungen.
