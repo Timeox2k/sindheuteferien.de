@@ -36,8 +36,10 @@
                     Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:
                 </p>
                 <p style="margin: 0.5rem 0;">
-                    <strong>Tiziano Santo Metzler</strong><br/>
-                    Bautzener Allee 59<br/>
+                    <strong>Hoy-Metzler IT</strong><br/>
+                    Inhaber: Tiziano Santo Metzler<br/>
+                    c/o Autorenglück #54601<br/>
+                    Albert-Einstein-Straße 47<br/>
                     02977 Hoyerswerda<br/>
                     Deutschland<br/>
                     Telefon: +49 1590 1084284<br/>

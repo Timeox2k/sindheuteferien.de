@@ -11,7 +11,8 @@
                 <p style="margin: 0.5rem 0;">
                     <strong>Hoy-Metzler IT</strong><br/>
                     Inhaber: Tiziano Santo Metzler<br/>
-                    Bautzener Allee 59<br/>
+                    c/o Autorenglück #54601<br/>
+                    Albert-Einstein-Straße 47<br/>
                     02977 Hoyerswerda<br/>
                     Deutschland
                 </p>
@@ -30,7 +31,8 @@
                 <h3 style="font-size: 1rem; color: #0f172a; margin-top: 1.25rem; margin-bottom: 0.25rem;">Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
                 <p style="margin: 0.25rem 0;">
                     Tiziano Santo Metzler<br/>
-                    Bautzener Allee 59<br/>
+                    c/o Autorenglück #54601<br/>
+                    Albert-Einstein-Straße 47<br/>
                     02977 Hoyerswerda
                 </p>
             </div>
