@@ -8,6 +8,8 @@ use Tests\TestCase;
 
 class SeoRoutesTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_home_page_contains_seo_tags(): void
     {
         $response = $this->get('/');
@@ -34,6 +36,18 @@ class SeoRoutesTest extends TestCase
 
     public function test_holiday_detail_page_loads_with_exact_keyword_targeting(): void
     {
+        // A later holiday in the same state, shown as "Nächste Schulferien" on the detail page.
+        SchoolHoliday::create([
+            'uuid'           => 'test-weihnachtsferien-nrw-2026',
+            'name'           => 'Weihnachtsferien',
+            'start_date'     => '2026-12-23',
+            'end_date'       => '2027-01-06',
+            'regional_scope' => 'subdivision',
+            'temporal_scope' => '2026',
+            'nationwide'     => false,
+            'subdivisions'   => [['code' => 'DE-NW', 'shortName' => 'NW']],
+        ]);
+
         SchoolHoliday::firstOrCreate(
             ['uuid' => 'test-herbstferien-nrw-2026'],
             [
@@ -60,6 +74,18 @@ class SeoRoutesTest extends TestCase
 
     public function test_sitemap_index_and_year_sections(): void
     {
+        // The year sitemaps are generated from the holidays stored in the database.
+        SchoolHoliday::create([
+            'uuid'           => 'test-sitemap-nrw-2026',
+            'name'           => 'Herbstferien',
+            'start_date'     => '2026-10-17',
+            'end_date'       => '2026-10-31',
+            'regional_scope' => 'subdivision',
+            'temporal_scope' => '2026',
+            'nationwide'     => false,
+            'subdivisions'   => [['code' => 'DE-NW', 'shortName' => 'NW']],
+        ]);
+
         $response = $this->get('/sitemap.xml');
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/xml; charset=utf-8');
