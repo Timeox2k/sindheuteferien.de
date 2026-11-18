@@ -7,7 +7,7 @@ COPY . .
 RUN npm run build
 
 # Laravel on nginx + PHP-FPM, runs as www-data on port 8080
-FROM serversideup/php:8.4-fpm-nginx-v5.0.2
+FROM serversideup/php:8.4-fpm-nginx-v5.1.4
 WORKDIR /var/www/html
 
 USER root
